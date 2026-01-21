@@ -7,16 +7,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body {background-color:#0a0a0a;color:#f0f0f0;font-family:'Roboto',sans-serif;margin:0;display:flex;flex-direction:column;align-items:center;}
+        body {
+            background-color:#0a0a0a;
+            color:#f0f0f0;
+            font-family:'Roboto',sans-serif;
+            margin:0;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+        }
         
         /* Platform-specific padding */
-        .platform-mobile body {
-            padding-top: 150px;
+        body.platform-mobile {
+            padding-top: calc(100px + env(safe-area-inset-top, 0px));
             padding-left: 16px;
             padding-right: 16px;
-            padding-bottom: 24px;
+            padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
         }
-        .platform-desktop body {
+        body.platform-desktop {
             padding-top: 20px;
             padding-left: 20px;
             padding-right: 20px;
@@ -26,7 +34,7 @@
         h1, h2 {color:#ffffff;font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,0.2);}
         h1 {font-size:2.5em;margin-bottom:40px;}
         h2 {font-size:1.5em;margin:0 0 15px 0;}
-        .platform-mobile h2 {font-size:1.3em;}
+        body.platform-mobile h2 {font-size:1.3em;}
         
         input, button {background-color:#1a1a1a;color:#f0f0f0;border:1px solid #282828;padding:12px;margin:6px;border-radius:12px;font-size:16px;transition:all 0.3s ease;box-shadow:0 2px 4px rgba(0,0,0,0.1);}
         button {cursor:pointer;}
@@ -41,10 +49,11 @@
         
         .game-section {display:none;}
         .game-columns {display:flex;justify-content:space-between;align-items:flex-start;}
-        .platform-mobile .game-columns {flex-direction:column;align-items:center;gap:24px;}
+        body.platform-mobile .game-columns {flex-direction:column;align-items:center;gap:24px;}
         
         .left-column, .right-column {width:48%;}
-        .platform-mobile .left-column, .platform-mobile .right-column {width:100%;max-width:400px;}
+        body.platform-mobile .left-column, 
+        body.platform-mobile .right-column {width:100%;max-width:400px;}
         
         .scores {margin:0;display:flex;flex-direction:column;align-items:stretch;}
         .score-item {
@@ -60,7 +69,7 @@
             overflow:hidden;
             text-overflow:ellipsis;
         }
-        .platform-mobile .score-item {padding:12px;}
+        body.platform-mobile .score-item {padding:12px;}
         
         .round-inputs {display:flex;flex-direction:column;align-items:stretch;width:100%;}
         .round-input {
@@ -81,14 +90,14 @@
             width:120px;
             flex-shrink:0;
         }
-        .platform-mobile .round-input label {width:100px;}
-        .platform-mobile .round-input input {width:100px;}
+        body.platform-mobile .round-input label {width:100px;}
+        body.platform-mobile .round-input input {width:100px;}
         
         #submit-button {display:block;margin:12px auto 0;background-color:#1a1a1a;border-color:#282828;}
         #submit-button:hover {background-color:#282828;}
         
         #chart-container {margin-top:20px;background-color:#1a1a1a;padding:18px;border-radius:12px;box-shadow:0 3px 6px rgba(0,0,0,0.15);height:400px;}
-        .platform-mobile #chart-container {height:300px;padding:12px;}
+        body.platform-mobile #chart-container {height:300px;padding:12px;}
         
         #game-over {color:#ff5252;font-size:1.8em;margin:20px 0;display:none;}
         #restart-button {background-color:#4caf50;margin:12px 0 0 auto;display:block;}
@@ -108,7 +117,7 @@
             width:320px;
             text-align:center;
         }
-        .platform-mobile .player-setup-container {width:100%;max-width:320px;}
+        body.platform-mobile .player-setup-container {width:100%;max-width:320px;}
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
