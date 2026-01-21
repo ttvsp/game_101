@@ -6,47 +6,54 @@
     <title>Карточная Игра 101</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        body {background-color:#121212;color:#e0e0e0;font-family:'Roboto',sans-serif;margin:0;padding:20px;display:flex;flex-direction:column;align-items:center;}
-        h1, h2 {color:#ffffff;font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,0.5);}
-        h1 {font-size:2.5em;margin-bottom:20px;}
-        h2 {font-size:1.5em;margin:15px 0;}
-        input, button {background-color:#1e1e1e;color:#e0e0e0;border:1px solid #333;padding:10px;margin:5px;border-radius:8px;font-size:16px;transition:all 0.3s ease;}
+        body {background-color:#0a0a0a;color:#f0f0f0;font-family:'Roboto',sans-serif;margin:0;padding:20px;display:flex;flex-direction:column;align-items:center;}
+        h1, h2 {color:#ffffff;font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,0.2);}
+        h1 {font-size:2.5em;margin-bottom:40px;}
+        h2 {font-size:1.5em;margin:0 0 15px 0;}
+        input, button {background-color:#1a1a1a;color:#f0f0f0;border:1px solid #282828;padding:12px;margin:6px;border-radius:12px;font-size:16px;transition:all 0.3s ease;box-shadow:0 2px 4px rgba(0,0,0,0.1);}
         button {cursor:pointer;}
-        button:hover {background-color:#333;border-color:#555;}
+        button:hover {background-color:#282828;border-color:#383838;box-shadow:0 4px 8px rgba(0,0,0,0.2);}
         .container {max-width:800px;width:100%;text-align:center;}
         .players-input {display:flex;flex-direction:column;align-items:center;}
-        .player-input {display:flex;align-items:center;margin:5px 0;}
-        .player-input input {width:200px;margin-right:10px;}
-        .remove-player {background-color:transparent;border:none;color:#ff4d4d;font-size:20px;cursor:pointer;padding:0;width:30px;height:30px;display:flex;align-items:center;justify-content:center;}
-        .remove-player:hover {color:#cc0000;}
+        .player-input {display:flex;align-items:center;margin:6px 0;}
+        .player-input input {width:220px;margin-right:5px;}
+        .remove-player {background-color:transparent;border:none;color:#ff5252;font-size:26px;cursor:pointer;padding:0;width:32px;height:32px;display:flex;align-items:center;justify-content:center;transition:all 0.3s ease;}
+        .remove-player:hover {color:#ff1744;transform:scale(1.1);}
         .game-section {display:none;}
         .game-columns {display:flex;justify-content:space-between;align-items:flex-start;}
         .left-column, .right-column {width:48%;}
         .scores {margin:0;display:flex;flex-direction:column;align-items:flex-start;}
-        .score-item {background-color:#1e1e1e;padding:12px;margin:5px 0;border-radius:8px;width:100%;text-align:left;box-shadow:0 2px 4px rgba(0,0,0,0.3);}
+        .score-item {background-color:#1a1a1a;padding:14px;margin:6px 0;border-radius:12px;width:100%;text-align:left;box-shadow:0 3px 6px rgba(0,0,0,0.15);}
         .round-inputs {display:flex;flex-direction:column;align-items:flex-start;}
-        .round-input {display:flex;align-items:center;margin:5px 0;width:100%;}
-        .round-input label {width:150px;text-align:right;margin-right:10px;}
-        #submit-button {display:block;margin:10px auto 0;}
-        #chart-container {margin-top:20px;background-color:#1e1e1e;padding:15px;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.3);height:400px;}
-        #game-over {color:#ff4d4d;font-size:1.8em;margin:20px 0;display:none;}
-        #restart-button {background-color:#4caf50;margin:10px 0 0 auto;display:block;}
+        .round-input {display:flex;align-items:center;margin:6px 0;width:100%;}
+        .round-input label {width:150px;text-align:right;margin-right:12px;color:#bbbbbb;}
+        #submit-button {display:block;margin:12px auto 0;background-color:#1a1a1a;border-color:#282828;}
+        #submit-button:hover {background-color:#282828;}
+        #chart-container {margin-top:20px;background-color:#1a1a1a;padding:18px;border-radius:12px;box-shadow:0 3px 6px rgba(0,0,0,0.15);height:400px;}
+        #game-over {color:#ff5252;font-size:1.8em;margin:20px 0;display:none;}
+        #restart-button {background-color:#4caf50;margin:12px 0 0 auto;display:block;}
         #restart-button:hover {background-color:#388e3c;}
-        .chart-section {width:100%;}
+        .chart-section {width:100%; margin-top: 40px;}
+        #add-player-button {border-radius:50%; width:44px; height:44px; font-size:26px; padding:0; line-height:1; margin:12px auto; display:block;box-shadow:0 2px 4px rgba(0,0,0,0.1);}
+        #start-game-button {font-size:20px; padding:16px 32px; margin-bottom:40px;background-color:#1a1a1a;border-color:#282828;}
+        #start-game-button:hover {background-color:#282828;}
+        .player-setup-container {background-color:#1a1a1a; padding:24px; border-radius:24px; box-shadow:0 4px 8px rgba(0,0,0,0.2); width:320px; text-align:center;}
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
         <h1>101</h1>
-        
+       
         <div id="setup-section" class="players-input">
-            <h2>Введите имена игроков</h2>
-            <div id="player-inputs"></div>
-            <button onclick="addPlayerInput()">Добавить игрока</button>
-            <button onclick="startGame()">Начать игру</button>
+            <button id="start-game-button" onclick="startGame()">Начать игру</button>
+            <div class="player-setup-container">
+                <h2>Введите имена игроков</h2>
+                <div id="player-inputs"></div>
+                <button id="add-player-button" onclick="addPlayerInput()">+</button>
+            </div>
         </div>
-        
+       
         <div id="game-section" class="game-section">
             <div class="game-columns">
                 <div class="left-column">
@@ -56,12 +63,12 @@
                 <div class="right-column">
                     <h2>Ввод очков за раздачу</h2>
                     <div id="round-inputs" class="round-inputs"></div>
-                    <button id="submit-button" onclick="submitRound()">Записать результат</button>
                 </div>
             </div>
-            
+            <button id="submit-button" onclick="submitRound()">Записать результат</button>
+           
             <h2 id="game-over">Игра окончена!</h2>
-            
+           
             <div class="chart-section">
                 <h2>Динамика счета</h2>
                 <div id="chart-container">
@@ -71,7 +78,6 @@
             </div>
         </div>
     </div>
-
     <script>
         let players = [];
         let scores = {};
@@ -79,12 +85,10 @@
         let roundNumber = 0;
         let chart;
         let playerInputCount = 0;
-
         window.onload = function() {
             addPlayerInput();
             addPlayerInput();
         };
-
         function addPlayerInput(name = '') {
             playerInputCount++;
             const inputsDiv = document.getElementById('player-inputs');
@@ -103,12 +107,10 @@
             div.appendChild(removeBtn);
             inputsDiv.appendChild(div);
         }
-
         function removePlayerInput(id) {
             const div = document.getElementById(`player-input-${id}`);
             if (div) div.remove();
         }
-
         function startGame() {
             const inputDivs = document.querySelectorAll('.player-input input');
             players = Array.from(inputDivs).map(input => input.value.trim()).filter(name => name !== '');
@@ -120,10 +122,10 @@
                 scores[player] = 0;
                 history[player] = [0];
             });
-            
+           
             document.getElementById('setup-section').style.display = 'none';
             document.getElementById('game-section').style.display = 'block';
-            
+           
             updateScoresDisplay();
             updateRoundInputs();
             initChart();
@@ -132,7 +134,6 @@
             document.getElementById('round-inputs').style.display = 'flex';
             document.getElementById('submit-button').style.display = 'block';
         }
-
         function updateScoresDisplay() {
             const scoresDiv = document.getElementById('scores');
             scoresDiv.innerHTML = '';
@@ -143,7 +144,6 @@
                 scoresDiv.appendChild(div);
             });
         }
-
         function updateRoundInputs() {
             const inputsDiv = document.getElementById('round-inputs');
             inputsDiv.innerHTML = '';
@@ -161,7 +161,6 @@
                 inputsDiv.appendChild(div);
             });
         }
-
         function submitRound() {
             let allFilled = true;
             const points = {};
@@ -175,12 +174,12 @@
                 points[player] = value;
                 input.value = '';
             });
-            
+           
             if (!allFilled) {
                 alert('Введите очки для всех игроков!');
                 return;
             }
-            
+           
             roundNumber++;
             let gameOver = false;
             players.forEach(player => {
@@ -196,21 +195,20 @@
                 scores[player] = newScore;
                 history[player].push(newScore);
             });
-            
+           
             updateScoresDisplay();
             updateChart();
-            
+           
             if (gameOver) {
                 document.getElementById('round-inputs').style.display = 'none';
                 document.getElementById('submit-button').style.display = 'none';
                 document.getElementById('game-over').style.display = 'block';
             }
         }
-
         function initChart() {
             const ctx = document.getElementById('score-chart').getContext('2d');
             const datasets = players.map(player => ({
-                label: player,
+                label: '  ' + player,
                 data: [],
                 borderColor: getBrightColor(),
                 backgroundColor: getBrightColor(),
@@ -219,10 +217,10 @@
                 pointStyle: 'circle',
                 pointRadius: 5,
                 pointBackgroundColor: getBrightColor(),
-                pointBorderColor: '#fff',
+                pointBorderColor: 'transparent',
                 pointBorderWidth: 0
             }));
-            
+           
             chart = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -232,21 +230,22 @@
                 options: {
                     scales: {
                         y: {
-                            beginAtZero: false,
-                            title: {display: true, text: 'Счет', color: '#e0e0e0'},
-                            grid: {color: '#333'},
-                            ticks: {color: '#e0e0e0'}
+                            min: -10,
+                            max: 100,
+                            title: {display: true, text: 'Счет', color: '#ffffff', font: {size: 14, weight: 'bold'}},
+                            grid: {color: '#282828'},
+                            ticks: {color: '#ffffff', stepSize: 20, font: {size: 12, weight: 'bold'}}
                         },
                         x: {
                             title: {display: false},
-                            grid: {color: '#333'},
-                            ticks: {color: '#e0e0e0'}
+                            grid: {color: '#282828'},
+                            ticks: {color: '#ffffff', font: {size: 12, weight: 'bold'}, callback: function(value, index, ticks) { return index === 0 ? '' : value; }}
                         }
                     },
                     plugins: {
                         legend: {
                             position: 'bottom',
-                            labels: {color: '#e0e0e0', usePointStyle: true, pointStyle: 'circle', boxWidth: 6, padding: 30, boxPadding: 15}
+                            labels: {color: '#ffffff', usePointStyle: true, pointStyle: 'circle', boxWidth: 4, padding: 30, font: {size: 14, weight: 'bold'}}
                         }
                     },
                     responsive: true,
@@ -254,22 +253,30 @@
                 }
             });
         }
-
         function updateChart() {
             chart.data.labels = Array.from({length: roundNumber + 1}, (_, i) => i);
             players.forEach((player, index) => {
                 chart.data.datasets[index].data = history[player];
             });
+
+            let allScores = Object.values(history).flat();
+            let globalMin = Math.min(...allScores);
+            let globalMax = Math.max(...allScores);
+
+            let effectiveMin = Math.min(-10, Math.floor(globalMin / 20) * 20);
+            let effectiveMax = Math.max(100, Math.ceil(globalMax / 20) * 20);
+
+            chart.options.scales.y.min = effectiveMin;
+            chart.options.scales.y.max = effectiveMax;
+
             chart.update();
         }
-
         function getBrightColor() {
             const h = Math.random() * 360;
             const s = 100;
             const l = 70;
             return `hsl(${h}, ${s}%, ${l}%)`;
         }
-
         function restartGame() {
             location.reload();
         }
