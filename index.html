@@ -8,8 +8,8 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {background-color:#0a0a0a;color:#f0f0f0;font-family:'Roboto',sans-serif;margin:0;display:flex;flex-direction:column;align-items:center;}
-        .platform-mobile body {padding-top: calc(20px + env(safe-area-inset-top, 0px));}
-        .platform-desktop body {padding-top: 20px;}
+        .platform-mobile body {padding-top: calc(40px + env(safe-area-inset-top, 0px));padding-left:16px;padding-right:16px;padding-bottom:16px;}
+        .platform-desktop body {padding-top: 20px;padding-left:20px;padding-right:20px;padding-bottom:20px;}
         h1, h2 {color:#ffffff;font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,0.2);}
         h1 {font-size:2.5em;margin-bottom:40px;}
         h2 {font-size:1.5em;margin:0 0 15px 0;}
@@ -29,12 +29,13 @@
         .left-column, .right-column {width:48%;}
         .platform-mobile .left-column, .platform-mobile .right-column {width:100%;}
         .scores {margin:0;display:flex;flex-direction:column;align-items:flex-start;}
-        .score-item {background-color:#1a1a1a;padding:14px;margin:6px 0;border-radius:12px;width:100%;text-align:left;box-shadow:0 3px 6px rgba(0,0,0,0.15);}
+        .score-item {background-color:#1a1a1a;padding:14px;margin:6px 0;border-radius:12px;width:100%;text-align:left;box-shadow:0 3px 6px rgba(0,0,0,0.15);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
         .platform-mobile .score-item {padding:10px;}
         .round-inputs {display:flex;flex-direction:column;align-items:flex-start;}
         .round-input {display:flex;align-items:center;margin:6px 0;width:100%;}
         .round-input label {width:150px;text-align:right;margin-right:12px;color:#bbbbbb;}
         .platform-mobile .round-input label {width:120px;}
+        .platform-mobile .round-input {justify-content:center;}
         #submit-button {display:block;margin:12px auto 0;background-color:#1a1a1a;border-color:#282828;}
         #submit-button:hover {background-color:#282828;}
         #chart-container {margin-top:20px;background-color:#1a1a1a;padding:18px;border-radius:12px;box-shadow:0 3px 6px rgba(0,0,0,0.15);height:400px;}
