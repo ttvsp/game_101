@@ -13,6 +13,7 @@
         h1, h2 {color:#ffffff;font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,0.2);}
         h1 {font-size:2.5em;margin-bottom:40px;}
         h2 {font-size:1.5em;margin:0 0 15px 0;}
+        .platform-mobile h2 {font-size:1.3em;}
         input, button {background-color:#1a1a1a;color:#f0f0f0;border:1px solid #282828;padding:12px;margin:6px;border-radius:12px;font-size:16px;transition:all 0.3s ease;box-shadow:0 2px 4px rgba(0,0,0,0.1);}
         button {cursor:pointer;}
         button:hover {background-color:#282828;border-color:#383838;box-shadow:0 4px 8px rgba(0,0,0,0.2);}
@@ -24,15 +25,20 @@
         .remove-player:hover {color:#ff1744;transform:scale(1.1);}
         .game-section {display:none;}
         .game-columns {display:flex;justify-content:space-between;align-items:flex-start;}
+        .platform-mobile .game-columns {flex-direction:column;align-items:center;gap:24px;}
         .left-column, .right-column {width:48%;}
+        .platform-mobile .left-column, .platform-mobile .right-column {width:100%;}
         .scores {margin:0;display:flex;flex-direction:column;align-items:flex-start;}
         .score-item {background-color:#1a1a1a;padding:14px;margin:6px 0;border-radius:12px;width:100%;text-align:left;box-shadow:0 3px 6px rgba(0,0,0,0.15);}
+        .platform-mobile .score-item {padding:10px;}
         .round-inputs {display:flex;flex-direction:column;align-items:flex-start;}
         .round-input {display:flex;align-items:center;margin:6px 0;width:100%;}
         .round-input label {width:150px;text-align:right;margin-right:12px;color:#bbbbbb;}
+        .platform-mobile .round-input label {width:120px;}
         #submit-button {display:block;margin:12px auto 0;background-color:#1a1a1a;border-color:#282828;}
         #submit-button:hover {background-color:#282828;}
         #chart-container {margin-top:20px;background-color:#1a1a1a;padding:18px;border-radius:12px;box-shadow:0 3px 6px rgba(0,0,0,0.15);height:400px;}
+        .platform-mobile #chart-container {height:300px;padding:12px;}
         #game-over {color:#ff5252;font-size:1.8em;margin:20px 0;display:none;}
         #restart-button {background-color:#4caf50;margin:12px 0 0 auto;display:block;}
         #restart-button:hover {background-color:#388e3c;}
@@ -41,6 +47,7 @@
         #start-game-button {font-size:20px; padding:16px 32px; margin-bottom:40px;background-color:#1a1a1a;border-color:#282828;}
         #start-game-button:hover {background-color:#282828;}
         .player-setup-container {background-color:#1a1a1a; padding:24px; border-radius:24px; box-shadow:0 4px 8px rgba(0,0,0,0.2); width:320px; text-align:center;}
+        .platform-mobile .player-setup-container {width:100%;max-width:320px;}
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
