@@ -7,337 +7,108 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        * {box-sizing: border-box; margin: 0; padding: 0;}
-        body {
-            background-color:#0a0a0a;
-            color:#f0f0f0;
-            font-family:'Roboto',sans-serif;
-            margin:0;
-            display:flex;
-            flex-direction:column;
-            align-items:center;
-            min-height: 100vh;
-        }
+        body {background-color:#0a0a0a;color:#f0f0f0;font-family:'Roboto',sans-serif;margin:0;display:flex;flex-direction:column;align-items:center;}
         
-        /* Platform-specific top padding */
+        /* Platform-specific padding */
         .platform-mobile body {
-            padding-top: calc(env(safe-area-inset-top, 0px) + 60px);
-            padding-left:12px;
-            padding-right:12px;
-            padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
+            padding-top: calc(80px + env(safe-area-inset-top, 0px));
+            padding-left: 16px;
+            padding-right: 16px;
+            padding-bottom: 24px;
         }
         .platform-desktop body {
-            padding-top: 40px;
-            padding-left:20px;
-            padding-right:20px;
-            padding-bottom:20px;
+            padding-top: 20px;
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-bottom: 20px;
         }
         
-        h1 {
-            color:#ffffff;
-            font-weight:700;
-            text-shadow:0 1px 2px rgba(0,0,0,0.2);
-            font-size:2.5em;
-            margin-bottom:40px;
-        }
+        h1, h2 {color:#ffffff;font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,0.2);}
+        h1 {font-size:2.5em;margin-bottom:40px;}
+        h2 {font-size:1.5em;margin:0 0 15px 0;}
+        .platform-mobile h2 {font-size:1.3em;}
         
-        h2 {
-            color:#ffffff;
-            font-weight:700;
-            text-shadow:0 1px 2px rgba(0,0,0,0.2);
-            font-size:1.5em;
-            margin:0 0 12px 0;
-        }
-        
-        /* Smaller headers on mobile */
-        .platform-mobile h1 {
-            font-size:1.8em;
-            margin-bottom:20px;
-        }
-        .platform-mobile h2 {
-            font-size:1.2em;
-            margin:0 0 8px 0;
-        }
-        
-        input, button {
-            background-color:#1a1a1a;
-            color:#f0f0f0;
-            border:1px solid #282828;
-            padding:12px;
-            margin:6px;
-            border-radius:12px;
-            font-size:16px;
-            transition:all 0.3s ease;
-            box-shadow:0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .platform-mobile input, .platform-mobile button {
-            padding:10px;
-            margin:4px;
-            font-size:15px;
-        }
-        
+        input, button {background-color:#1a1a1a;color:#f0f0f0;border:1px solid #282828;padding:12px;margin:6px;border-radius:12px;font-size:16px;transition:all 0.3s ease;box-shadow:0 2px 4px rgba(0,0,0,0.1);}
         button {cursor:pointer;}
-        button:hover {
-            background-color:#282828;
-            border-color:#383838;
-            box-shadow:0 4px 8px rgba(0,0,0,0.2);
-        }
+        button:hover {background-color:#282828;border-color:#383838;box-shadow:0 4px 8px rgba(0,0,0,0.2);}
         
-        .container {
-            max-width:800px;
-            width:100%;
-            text-align:center;
-        }
-        
-        .players-input {
-            display:flex;
-            flex-direction:column;
-            align-items:center;
-        }
-        
-        .player-input {
-            display:flex;
-            align-items:center;
-            margin:6px 0;
-        }
-        
-        .platform-mobile .player-input {
-            margin:4px 0;
-        }
-        
-        .player-input input {
-            width:220px;
-            margin-right:5px;
-        }
-        
-        .platform-mobile .player-input input {
-            width:180px;
-        }
-        
-        .remove-player {
-            background-color:transparent;
-            border:none;
-            color:#ff5252;
-            font-size:26px;
-            cursor:pointer;
-            padding:0;
-            width:32px;
-            height:32px;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            transition:all 0.3s ease;
-        }
-        
-        .remove-player:hover {
-            color:#ff1744;
-            transform:scale(1.1);
-        }
+        .container {max-width:800px;width:100%;text-align:center;}
+        .players-input {display:flex;flex-direction:column;align-items:center;}
+        .player-input {display:flex;align-items:center;margin:6px 0;}
+        .player-input input {width:220px;margin-right:5px;}
+        .remove-player {background-color:transparent;border:none;color:#ff5252;font-size:26px;cursor:pointer;padding:0;width:32px;height:32px;display:flex;align-items:center;justify-content:center;transition:all 0.3s ease;}
+        .remove-player:hover {color:#ff1744;transform:scale(1.1);}
         
         .game-section {display:none;}
+        .game-columns {display:flex;justify-content:space-between;align-items:flex-start;}
+        .platform-mobile .game-columns {flex-direction:column;align-items:center;gap:24px;}
         
-        .game-columns {
-            display:flex;
-            justify-content:space-between;
-            align-items:flex-start;
-            gap:20px;
-        }
+        .left-column, .right-column {width:48%;}
+        .platform-mobile .left-column, .platform-mobile .right-column {width:100%;max-width:400px;}
         
-        .platform-mobile .game-columns {
-            flex-direction:column;
-            align-items:stretch;
-            gap:16px;
-        }
-        
-        .left-column, .right-column {
-            width:48%;
-        }
-        
-        .platform-mobile .left-column, 
-        .platform-mobile .right-column {
-            width:100%;
-        }
-        
-        .scores {
-            margin:0;
-            display:flex;
-            flex-direction:column;
-            align-items:stretch;
-        }
-        
+        .scores {margin:0;display:flex;flex-direction:column;align-items:stretch;}
         .score-item {
             background-color:#1a1a1a;
             padding:14px;
             margin:6px 0;
             border-radius:12px;
             width:100%;
+            box-sizing:border-box;
             text-align:left;
             box-shadow:0 3px 6px rgba(0,0,0,0.15);
             white-space:nowrap;
             overflow:hidden;
             text-overflow:ellipsis;
         }
+        .platform-mobile .score-item {padding:12px;}
         
-        /* Компактный размер для мобильных */
-        .platform-mobile .score-item {
-            padding:8px 10px;
-            margin:3px 0;
-            font-size:14px;
-        }
-        
-        .round-inputs {
-            display:flex;
-            flex-direction:column;
-            align-items:stretch;
-        }
-        
+        .round-inputs {display:flex;flex-direction:column;align-items:stretch;width:100%;}
         .round-input {
             display:flex;
             align-items:center;
+            justify-content:center;
             margin:6px 0;
             width:100%;
         }
-        
-        .platform-mobile .round-input {
-            margin:3px 0;
-        }
-        
         .round-input label {
-            width:150px;
+            width:120px;
             text-align:right;
             margin-right:12px;
             color:#bbbbbb;
             flex-shrink:0;
         }
-        
-        .platform-mobile .round-input label {
-            width:100px;
-            margin-right:8px;
-            font-size:14px;
-        }
-        
         .round-input input {
-            flex:1;
-            min-width:0;
+            width:120px;
+            flex-shrink:0;
         }
+        .platform-mobile .round-input label {width:100px;}
+        .platform-mobile .round-input input {width:100px;}
         
-        .platform-mobile .round-input input {
-            margin:0;
-        }
+        #submit-button {display:block;margin:12px auto 0;background-color:#1a1a1a;border-color:#282828;}
+        #submit-button:hover {background-color:#282828;}
         
-        #submit-button {
-            display:block;
-            margin:16px auto 0;
-            background-color:#1a1a1a;
-            border-color:#282828;
-        }
+        #chart-container {margin-top:20px;background-color:#1a1a1a;padding:18px;border-radius:12px;box-shadow:0 3px 6px rgba(0,0,0,0.15);height:400px;}
+        .platform-mobile #chart-container {height:300px;padding:12px;}
         
-        .platform-mobile #submit-button {
-            margin:12px auto 0;
-        }
+        #game-over {color:#ff5252;font-size:1.8em;margin:20px 0;display:none;}
+        #restart-button {background-color:#4caf50;margin:12px 0 0 auto;display:block;}
+        #restart-button:hover {background-color:#388e3c;}
         
-        #submit-button:hover {
-            background-color:#282828;
-        }
+        .chart-section {width:100%; margin-top: 40px;}
         
-        #chart-container {
-            margin-top:20px;
-            background-color:#1a1a1a;
-            padding:18px;
-            border-radius:12px;
-            box-shadow:0 3px 6px rgba(0,0,0,0.15);
-            height:400px;
-        }
-        
-        .platform-mobile #chart-container {
-            height:280px;
-            padding:12px;
-            margin-top:16px;
-        }
-        
-        #game-over {
-            color:#ff5252;
-            font-size:1.8em;
-            margin:20px 0;
-            display:none;
-        }
-        
-        .platform-mobile #game-over {
-            font-size:1.4em;
-            margin:16px 0;
-        }
-        
-        #restart-button {
-            background-color:#4caf50;
-            margin:12px 0 0 auto;
-            display:block;
-        }
-        
-        #restart-button:hover {
-            background-color:#388e3c;
-        }
-        
-        .chart-section {
-            width:100%; 
-            margin-top: 40px;
-        }
-        
-        .platform-mobile .chart-section {
-            margin-top: 24px;
-        }
-        
-        #add-player-button {
-            border-radius:50%; 
-            width:44px; 
-            height:44px; 
-            font-size:26px; 
-            padding:0; 
-            line-height:1; 
-            margin:12px auto; 
-            display:block;
-            box-shadow:0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .platform-mobile #add-player-button {
-            width:40px;
-            height:40px;
-            font-size:24px;
-            margin:8px auto;
-        }
-        
-        #start-game-button {
-            font-size:20px; 
-            padding:16px 32px; 
-            margin-bottom:40px;
-            background-color:#1a1a1a;
-            border-color:#282828;
-        }
-        
-        .platform-mobile #start-game-button {
-            font-size:18px;
-            padding:14px 28px;
-            margin-bottom:20px;
-        }
-        
-        #start-game-button:hover {
-            background-color:#282828;
-        }
+        #add-player-button {border-radius:50%; width:44px; height:44px; font-size:26px; padding:0; line-height:1; margin:12px auto; display:block;box-shadow:0 2px 4px rgba(0,0,0,0.1);}
+        #start-game-button {font-size:20px; padding:16px 32px; margin-bottom:40px;background-color:#1a1a1a;border-color:#282828;}
+        #start-game-button:hover {background-color:#282828;}
         
         .player-setup-container {
-            background-color:#1a1a1a; 
-            padding:24px; 
-            border-radius:24px; 
-            box-shadow:0 4px 8px rgba(0,0,0,0.2); 
-            width:320px; 
+            background-color:#1a1a1a;
+            padding:24px;
+            border-radius:24px;
+            box-shadow:0 4px 8px rgba(0,0,0,0.2);
+            width:320px;
             text-align:center;
         }
-        
-        .platform-mobile .player-setup-container {
-            width:100%;
-            max-width:320px;
-            padding:16px;
-        }
+        .platform-mobile .player-setup-container {width:100%;max-width:320px;}
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -361,7 +132,7 @@
                     <div id="scores" class="scores"></div>
                 </div>
                 <div class="right-column">
-                    <h2>Ввод очков</h2>
+                    <h2>Ввод очков за раздачу</h2>
                     <div id="round-inputs" class="round-inputs"></div>
                 </div>
             </div>
@@ -419,7 +190,7 @@
             const inputDivs = document.querySelectorAll('.player-input input');
             players = Array.from(inputDivs).map(input => input.value.trim()).filter(name => name !== '');
             if (players.length < 2) {
-                webApp.showAlert('Добавьте хотя бы двух игроков!');
+                alert('Добавьте хотя бы двух игроков!');
                 return;
             }
             players.forEach(player => {
@@ -483,7 +254,7 @@
             });
            
             if (!allFilled) {
-                webApp.showAlert('Введите очки для всех игроков!');
+                alert('Введите очки для всех игроков!');
                 return;
             }
            
@@ -497,7 +268,7 @@
                     newScore = 0;
                 } else if (newScore > 101) {
                     gameOver = true;
-                    webApp.showAlert(`${player} проиграл! Счет превысил 101.`);
+                    alert(`${player} проиграл! Счет превысил 101.`);
                 }
                 scores[player] = newScore;
                 history[player].push(newScore);
@@ -602,15 +373,11 @@
             webApp.setHeaderColor('#0a0a0a');
             webApp.setBackgroundColor('#0a0a0a');
             
+            // Определяем платформу как в MarketLab
             const isMobile = ['android','ios'].includes(webApp.platform);
             document.body.classList.add(isMobile ? 'platform-mobile' : 'platform-desktop');
             
-            // Request fullscreen for both mobile and desktop
-            if (webApp.isVersionAtLeast('8.0')) {
-                setTimeout(() => {
-                    webApp.requestFullscreen().catch(() => webApp.expand());
-                }, 300);
-            }
+            setTimeout(() => webApp.requestFullscreen().catch(() => webApp.expand()), 300);
         };
 
         if (window.Telegram?.WebApp) {
