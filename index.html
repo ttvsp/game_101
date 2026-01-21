@@ -21,13 +21,13 @@
         
         /* Platform-specific top padding */
         .platform-mobile body {
-            padding-top: calc(env(safe-area-inset-top, 0px) + 12px);
+            padding-top: calc(env(safe-area-inset-top, 0px) + 60px);
             padding-left:12px;
             padding-right:12px;
             padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
         }
         .platform-desktop body {
-            padding-top: 20px;
+            padding-top: 40px;
             padding-left:20px;
             padding-right:20px;
             padding-bottom:20px;
@@ -419,7 +419,7 @@
             const inputDivs = document.querySelectorAll('.player-input input');
             players = Array.from(inputDivs).map(input => input.value.trim()).filter(name => name !== '');
             if (players.length < 2) {
-                alert('Добавьте хотя бы двух игроков!');
+                webApp.showAlert('Добавьте хотя бы двух игроков!');
                 return;
             }
             players.forEach(player => {
@@ -483,7 +483,7 @@
             });
            
             if (!allFilled) {
-                alert('Введите очки для всех игроков!');
+                webApp.showAlert('Введите очки для всех игроков!');
                 return;
             }
            
@@ -497,7 +497,7 @@
                     newScore = 0;
                 } else if (newScore > 101) {
                     gameOver = true;
-                    alert(`${player} проиграл! Счет превысил 101.`);
+                    webApp.showAlert(`${player} проиграл! Счет превысил 101.`);
                 }
                 scores[player] = newScore;
                 history[player].push(newScore);
@@ -605,8 +605,11 @@
             const isMobile = ['android','ios'].includes(webApp.platform);
             document.body.classList.add(isMobile ? 'platform-mobile' : 'platform-desktop');
             
-            if (isMobile && webApp.isVersionAtLeast('8.0')) {
-                setTimeout(() => webApp.requestFullscreen().catch(() => webApp.expand()), 300);
+            // Request fullscreen for both mobile and desktop
+            if (webApp.isVersionAtLeast('8.0')) {
+                setTimeout(() => {
+                    webApp.requestFullscreen().catch(() => webApp.expand());
+                }, 300);
             }
         };
 
