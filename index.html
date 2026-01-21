@@ -11,7 +11,7 @@
         
         /* Platform-specific padding */
         .platform-mobile body {
-            padding-top: calc(80px + env(safe-area-inset-top, 0px));
+            padding-top: calc(100px + env(safe-area-inset-top, 0px));
             padding-left: 16px;
             padding-right: 16px;
             padding-bottom: 24px;
@@ -377,7 +377,12 @@
             const isMobile = ['android','ios'].includes(webApp.platform);
             document.body.classList.add(isMobile ? 'platform-mobile' : 'platform-desktop');
             
-            setTimeout(() => webApp.requestFullscreen().catch(() => webApp.expand()), 300);
+            // Проверяем существование метода requestFullscreen
+            if (webApp.requestFullscreen) {
+                setTimeout(() => {
+                    webApp.requestFullscreen().catch(() => webApp.expand());
+                }, 300);
+            }
         };
 
         if (window.Telegram?.WebApp) {
