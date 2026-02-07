@@ -1775,9 +1775,9 @@
                 
                 this.element.innerHTML = `
                     <div class="header">
-                        <div style="width: 40px;"></div>
-                        <h2 class="header-title">Новая игра</h2>
                         ${savedPlayers.length > 0 ? '<button class="btn-back" id="btn-manage-players">⚙️</button>' : '<div style="width: 40px;"></div>'}
+                        <h2 class="header-title">Новая игра</h2>
+                        <div style="width: 40px;"></div>
                     </div>
                     <div class="content">
                         <h3 class="mb-4">Игроки</h3>
@@ -2443,9 +2443,9 @@
                 
                 this.element.innerHTML = `
                     <div class="header">
-                        <div style="width: 40px;"></div>
-                        <h2 class="header-title">История игр</h2>
                         ${games.length > 0 ? '<button class="btn-back" id="btn-clear">🗑️</button>' : '<div style="width: 40px;"></div>'}
+                        <h2 class="header-title">История игр</h2>
+                        <div style="width: 40px;"></div>
                     </div>
                     <div class="content">
                         ${games.length > 0 ? '<div class="history-list" id="history-list"></div>' : this.renderEmptyState()}
