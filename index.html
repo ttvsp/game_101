@@ -119,6 +119,10 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             text-size-adjust: 100%;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
         }
         
         body {
@@ -129,8 +133,23 @@
             color: var(--color-text-primary);
             background-color: var(--color-bg-primary);
             overflow-x: hidden;
+            overflow-y: auto;
             min-height: 100vh;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            position: relative;
+        }
+        
+        /* Platform-specific full-screen adjustments */
+        body.platform-mobile {
+            /* Mobile: use safe area insets for notches/bars */
             padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
+        }
+        
+        body.platform-desktop {
+            /* Desktop: no extra padding needed */
+            padding: 0;
         }
         
         /* ===== TYPOGRAPHY ===== */
@@ -149,7 +168,24 @@
             max-width: 800px;
             margin: 0 auto;
             min-height: 100vh;
+            height: 100%;
             position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Fullscreen optimization */
+        body.platform-mobile .app,
+        body.platform-desktop .app {
+            width: 100%;
+            max-width: 100%;
+        }
+        
+        /* For smaller screens, maintain max-width */
+        @media (min-width: 800px) {
+            body.platform-desktop .app {
+                max-width: 800px;
+            }
         }
         
         .screen {
@@ -797,6 +833,32 @@
             animation: slideUp 0.3s ease-out;
         }
         
+        /* ===== SCROLLBAR ===== */
+        /* Custom scrollbar for webkit browsers */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--color-bg-primary);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--color-bg-elevated);
+            border-radius: var(--radius-full);
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--color-border-strong);
+        }
+        
+        /* Firefox scrollbar */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: var(--color-bg-elevated) var(--color-bg-primary);
+        }
+        
         /* ===== RESPONSIVE ===== */
         @media (min-width: 768px) {
             .game-layout {
@@ -1113,12 +1175,41 @@
                 if (!this.app) return;
                 
                 try {
+                    // Basic initialization
                     this.app.ready();
                     this.app.expand();
                     this.app.disableVerticalSwipes();
                     this.app.setHeaderColor('#0D0D0D');
                     this.app.setBackgroundColor('#0D0D0D');
                     this.app.enableClosingConfirmation();
+                    
+                    // Add platform class to body
+                    const isMobile = ['android', 'ios'].includes(this.app.platform);
+                    document.body.classList.add(isMobile ? 'platform-mobile' : 'platform-desktop');
+                    
+                    // Request fullscreen on mobile (requires Telegram WebApp API 8.0+)
+                    if (['android', 'ios'].includes(this.app.platform) && this.app.isVersionAtLeast('8.0')) {
+                        setTimeout(() => {
+                            this.app.requestFullscreen()
+                                .then(() => {
+                                    console.log('Fullscreen mode enabled');
+                                })
+                                .catch((error) => {
+                                    console.log('Fullscreen not available, using expand:', error);
+                                    this.app.expand();
+                                });
+                        }, 300);
+                    }
+                    
+                    // Request fullscreen on desktop too (for browsers that support it)
+                    if (!['android', 'ios'].includes(this.app.platform) && this.app.isVersionAtLeast('8.0')) {
+                        setTimeout(() => {
+                            this.app.requestFullscreen()
+                                .catch(() => {
+                                    console.log('Fullscreen not available on desktop');
+                                });
+                        }, 300);
+                    }
                 } catch (error) {
                     console.error('Telegram API init error:', error);
                 }
