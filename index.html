@@ -1630,7 +1630,7 @@
                     this.telegram.haptic('success');
                     this.router.navigate('game');
                 } catch (error) {
-                    this.telegram.showAlert(error.message);
+                    this.toast.showError('Ошибка', error.message);
                     this.telegram.haptic('error');
                 }
             }
@@ -1655,7 +1655,7 @@
                     
                     return result;
                 } catch (error) {
-                    this.telegram.showAlert(error.message);
+                    this.toast.showError('Ошибка', error.message);
                     this.telegram.haptic('error');
                     throw error;
                 }
@@ -1863,7 +1863,7 @@
                 const playerNames = this.players.map(p => p.trim()).filter(p => p !== '');
                 
                 if (playerNames.length < 2) {
-                    this.app.telegram.showAlert('Добавьте минимум 2 игроков');
+                    this.app.toast.showError('Недостаточно игроков', 'Добавьте минимум 2 игроков');
                     this.app.telegram.haptic('error');
                     return;
                 }
@@ -1871,7 +1871,7 @@
                 // Check for duplicates
                 const uniqueNames = new Set(playerNames);
                 if (uniqueNames.size !== playerNames.length) {
-                    this.app.telegram.showAlert('Имена игроков должны быть уникальными');
+                    this.app.toast.showError('Дублирование имён', 'Имена игроков должны быть уникальными');
                     this.app.telegram.haptic('error');
                     return;
                 }
@@ -2006,6 +2006,7 @@
                 // Event listeners
                 this.element.querySelector('#btn-rules').addEventListener('click', () => {
                     this.app.telegram.haptic('light');
+                    // Use confirm for rules (needs user acknowledgment)
                     this.app.telegram.showAlert('Правила игры 101:\n\n1. При достижении 50 очков → сброс до 25\n2. При достижении ровно 101 очка → сброс до 0\n3. При превышении 101 → ПРОИГРЫШ\n4. Игра продолжается пока кто-то не проиграет\n5. Допустимы отрицательные очки');
                 });
                 
@@ -2221,7 +2222,7 @@
                 });
                 
                 if (!allFilled) {
-                    this.app.telegram.showAlert('Введите очки для всех игроков');
+                    this.app.toast.showError('Заполните все поля', 'Введите очки для всех игроков');
                     this.app.telegram.haptic('error');
                     return;
                 }
