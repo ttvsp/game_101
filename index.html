@@ -1247,14 +1247,11 @@
                     const pointsEarned = points[player.id];
                     let newScore = player.score + pointsEarned;
                     
-                    // Apply game rules
-                    if (newScore === 50) {
-                        newScore = 25; // Cutoff at 50
+                    if (newScore === 100) {
+                        newScore = 50;
                     } else if (newScore === 101) {
-                        // Reset to 0 when reaching exactly 101
                         newScore = 0;
                     } else if (newScore > 101) {
-                        // Loser - exceeded 101
                         results.push({ playerId: player.id, status: 'loser', score: newScore });
                     }
                     
@@ -2025,8 +2022,7 @@
                 // Event listeners
                 this.element.querySelector('#btn-rules').addEventListener('click', () => {
                     this.app.telegram.haptic('light');
-                    // Use confirm for rules (needs user acknowledgment)
-                    this.app.telegram.showAlert('Правила игры 101:\n\n1. При достижении 50 очков → сброс до 25\n2. При достижении ровно 101 очка → сброс до 0\n3. При превышении 101 → ПРОИГРЫШ\n4. Игра продолжается пока кто-то не проиграет\n5. Допустимы отрицательные очки');
+                    this.app.telegram.showAlert('Правила игры 101:\n\n1. При достижении 100 очков → сброс до 50\n2. При достижении ровно 101 очка → сброс до 0\n3. При превышении 101 → ПРОИГРЫШ\n4. Игра продолжается пока кто-то не проиграет\n5. Допустимы отрицательные очки');
                 });
                 
                 this.element.querySelector('#btn-end-game').addEventListener('click', () => {
