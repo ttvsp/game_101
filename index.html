@@ -441,7 +441,7 @@
         .welcome-logo {
             width: 140px;
             height: 140px;
-            margin-bottom: var(--space-4);
+            margin-bottom: var(--space-3);
             opacity: 0;
             animation: logoFadeIn 0.8s ease-out 0.2s forwards;
         }
@@ -1835,7 +1835,7 @@
                     item.innerHTML = `
                         <div class="player-color" style="background-color: ${color};"></div>
                         <input type="text" class="input" list="players-datalist" placeholder="Имя игрока ${index + 1}" value="${name}" data-index="${index}" autocomplete="off">
-                        ${this.players.length > 2 ? '<button class="btn-remove" data-index="' + index + '">×</button>' : '<div style="width: 32px;"></div>'}
+                        <button class="btn-remove" data-index="${index}" style="visibility: ${this.players.length > 2 ? 'visible' : 'hidden'};">×</button>
                     `;
                     container.appendChild(item);
                 });
