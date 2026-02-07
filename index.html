@@ -411,7 +411,7 @@
             box-shadow: var(--shadow-sm);
         }
         
-        .card:hover {
+        .card:hover:not(.history-card) {
             box-shadow: var(--shadow-md);
             border-color: var(--color-border-default);
             transform: translateY(-2px);
@@ -646,7 +646,7 @@
         }
         
         .history-card {
-            cursor: pointer;
+            cursor: default;
         }
         
         .history-header {
@@ -856,9 +856,6 @@
             font-size: 14px;
             color: #666;
             line-height: 1.4;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
 
         .notification-close {
@@ -1627,11 +1624,11 @@
                     this.game = new GameEngine();
                     this.game.createGame(playerNames);
                     this.saveGame();
-                    this.telegram.haptic('success');
+                    this.telegram.haptic('light');
                     this.router.navigate('game');
                 } catch (error) {
                     this.toast.showError('Ошибка', error.message);
-                    this.telegram.haptic('error');
+                    this.telegram.haptic('light');
                 }
             }
             
@@ -1656,7 +1653,7 @@
                     return result;
                 } catch (error) {
                     this.toast.showError('Ошибка', error.message);
-                    this.telegram.haptic('error');
+                    this.telegram.haptic('light');
                     throw error;
                 }
             }
@@ -1672,7 +1669,7 @@
                 
                 this.storage.saveCompletedGame(completedGame);
                 this.storage.clearCurrentGame();
-                this.telegram.haptic('error'); // Error haptic for game end
+                this.telegram.haptic('light');
                 this.router.navigate('finish', { game: completedGame, result });
             }
             
@@ -1680,7 +1677,7 @@
                 this.telegram.showConfirm('Завершить текущую игру без сохранения результата?', (confirmed) => {
                     if (confirmed) {
                         this.storage.clearCurrentGame();
-                        this.telegram.haptic('success');
+                        this.telegram.haptic('light');
                         this.router.navigate('setup');
                     }
                 });
@@ -1775,11 +1772,19 @@
                 
                 this.element.innerHTML = `
                     <div class="header">
-                        ${savedPlayers.length > 0 ? '<button class="btn-back" id="btn-manage-players">⚙️</button>' : '<div style="width: 40px;"></div>'}
+                        <div style="width: 40px;"></div>
                         <h2 class="header-title">Новая игра</h2>
                         <div style="width: 40px;"></div>
                     </div>
                     <div class="content">
+                        ${savedPlayers.length > 0 ? `
+                            <div style="text-align: right; margin-bottom: var(--space-3);">
+                                <button class="btn btn-secondary" id="btn-manage-players" style="font-size: var(--font-size-sm);">
+                                    <span style="margin-right: var(--space-2);">⚙️</span>
+                                    Управление игроками
+                                </button>
+                            </div>
+                        ` : ''}
                         <h3 class="mb-4">Игроки</h3>
                         <div class="player-list" id="player-list"></div>
                         <div class="add-player-container">
@@ -1840,15 +1845,14 @@
                     container.appendChild(item);
                 });
                 
-                // Input listeners
                 container.querySelectorAll('input').forEach(input => {
                     input.addEventListener('input', (e) => {
                         const index = parseInt(e.target.dataset.index);
                         this.players[index] = e.target.value;
+                        this.updateDatalist();
                     });
                 });
                 
-                // Remove listeners
                 container.querySelectorAll('.btn-remove').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         this.app.telegram.haptic('light');
@@ -1857,6 +1861,20 @@
                         this.renderPlayers();
                     });
                 });
+                
+                this.updateDatalist();
+            }
+            
+            updateDatalist() {
+                const datalist = this.element.querySelector('#players-datalist');
+                if (!datalist) return;
+                
+                const savedPlayers = this.app.storage.getPlayers();
+                const selectedNames = this.players.map(p => p.trim()).filter(p => p !== '');
+                
+                const availablePlayers = savedPlayers.filter(p => !selectedNames.includes(p));
+                
+                datalist.innerHTML = availablePlayers.map(p => `<option value="${p}">`).join('');
             }
             
             startGame() {
@@ -1864,15 +1882,14 @@
                 
                 if (playerNames.length < 2) {
                     this.app.toast.showError('Недостаточно игроков', 'Добавьте минимум 2 игроков');
-                    this.app.telegram.haptic('error');
+                    this.app.telegram.haptic('light');
                     return;
                 }
                 
-                // Check for duplicates
                 const uniqueNames = new Set(playerNames);
                 if (uniqueNames.size !== playerNames.length) {
                     this.app.toast.showError('Дублирование имён', 'Имена игроков должны быть уникальными');
-                    this.app.telegram.haptic('error');
+                    this.app.telegram.haptic('light');
                     return;
                 }
                 
@@ -1957,7 +1974,7 @@
                         this.app.telegram.showConfirm('Удалить всех игроков из списка?', (confirmed) => {
                             if (confirmed) {
                                 this.app.storage.clearAllPlayers();
-                                this.app.telegram.haptic('success');
+                                this.app.telegram.haptic('light');
                                 closeModal();
                             }
                         });
@@ -2223,7 +2240,7 @@
                 
                 if (!allFilled) {
                     this.app.toast.showError('Заполните все поля', 'Введите очки для всех игроков');
-                    this.app.telegram.haptic('error');
+                    this.app.telegram.haptic('light');
                     return;
                 }
                 
@@ -2517,7 +2534,7 @@
                 this.app.telegram.showConfirm('Удалить всю историю игр?', (confirmed) => {
                     if (confirmed) {
                         this.app.storage.clearAllGames();
-                        this.app.telegram.haptic('success');
+                        this.app.telegram.haptic('light');
                         this.render({});
                     }
                 });
