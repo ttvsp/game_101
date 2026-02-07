@@ -131,7 +131,7 @@
             font-weight: var(--font-weight-normal);
             line-height: 1.5;
             color: var(--color-text-primary);
-            background-color: var(--color-bg-primary);
+            background-color: var(--color-bg-secondary);
             overflow-x: hidden;
             overflow-y: auto;
             min-height: 100vh;
@@ -139,20 +139,6 @@
             margin: 0;
             padding: 0;
             position: relative;
-        }
-        
-        /* Platform-specific full-screen adjustments */
-        body.platform-mobile {
-            /* Mobile: use safe area insets for notches/bars and add extra padding for camera */
-            padding-top: max(env(safe-area-inset-top, 0px), 60px);
-            padding-left: env(safe-area-inset-left, 0);
-            padding-right: env(safe-area-inset-right, 0);
-            padding-bottom: env(safe-area-inset-bottom, 0);
-        }
-        
-        body.platform-desktop {
-            /* Desktop: no extra padding needed */
-            padding: 0;
         }
         
         /* ===== TYPOGRAPHY ===== */
@@ -175,10 +161,20 @@
             position: relative;
             display: flex;
             flex-direction: column;
+            background-color: var(--color-bg-secondary);
         }
         
-        /* Fullscreen optimization */
-        body.platform-mobile .app,
+        /* Platform-specific adjustments */
+        body.platform-mobile .app {
+            width: 100%;
+            max-width: 100%;
+            /* Add safe area padding for mobile */
+            padding-top: max(env(safe-area-inset-top, 0px), 60px);
+            padding-left: env(safe-area-inset-left, 0);
+            padding-right: env(safe-area-inset-right, 0);
+            padding-bottom: env(safe-area-inset-bottom, 0);
+        }
+        
         body.platform-desktop .app {
             width: 100%;
             max-width: 100%;
@@ -1189,6 +1185,14 @@
                     const isMobile = ['android', 'ios'].includes(this.app.platform);
                     document.body.classList.add(isMobile ? 'platform-mobile' : 'platform-desktop');
                     
+                    // Show SettingsButton on desktop for reload capability
+                    if (!isMobile && this.app.SettingsButton && this.app.isVersionAtLeast('6.10')) {
+                        this.app.SettingsButton.show();
+                        this.app.SettingsButton.onClick(() => {
+                            this.showSettingsMenu();
+                        });
+                    }
+                    
                     // Request fullscreen on mobile (requires Telegram WebApp API 8.0+)
                     if (['android', 'ios'].includes(this.app.platform) && this.app.isVersionAtLeast('8.0')) {
                         setTimeout(() => {
@@ -1253,6 +1257,27 @@
                 }
                 
                 this.app.BackButton.hide();
+            }
+            
+            // Settings menu for desktop
+            showSettingsMenu() {
+                if (!this.app) {
+                    window.location.reload();
+                    return;
+                }
+                
+                this.app.showPopup({
+                    title: 'Настройки',
+                    message: 'Выберите действие',
+                    buttons: [
+                        { id: 'reload', type: 'default', text: 'Перезагрузить' },
+                        { id: 'cancel', type: 'cancel' }
+                    ]
+                }, (buttonId) => {
+                    if (buttonId === 'reload') {
+                        window.location.reload();
+                    }
+                });
             }
             
             haptic(type = 'light') {
