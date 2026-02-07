@@ -1196,24 +1196,35 @@
                     // Request fullscreen on mobile (requires Telegram WebApp API 8.0+)
                     if (['android', 'ios'].includes(this.app.platform) && this.app.isVersionAtLeast('8.0')) {
                         setTimeout(() => {
-                            this.app.requestFullscreen()
-                                .then(() => {
-                                    console.log('Fullscreen mode enabled');
-                                })
-                                .catch((error) => {
-                                    console.log('Fullscreen not available, using expand:', error);
-                                    this.app.expand();
-                                });
+                            if (typeof this.app.requestFullscreen === 'function') {
+                                const result = this.app.requestFullscreen();
+                                if (result && typeof result.then === 'function') {
+                                    result
+                                        .then(() => {
+                                            console.log('Fullscreen mode enabled');
+                                        })
+                                        .catch((error) => {
+                                            console.log('Fullscreen not available, using expand:', error);
+                                            this.app.expand();
+                                        });
+                                }
+                            } else {
+                                console.log('requestFullscreen not available');
+                            }
                         }, 300);
                     }
                     
                     // Request fullscreen on desktop too (for browsers that support it)
                     if (!['android', 'ios'].includes(this.app.platform) && this.app.isVersionAtLeast('8.0')) {
                         setTimeout(() => {
-                            this.app.requestFullscreen()
-                                .catch(() => {
-                                    console.log('Fullscreen not available on desktop');
-                                });
+                            if (typeof this.app.requestFullscreen === 'function') {
+                                const result = this.app.requestFullscreen();
+                                if (result && typeof result.then === 'function') {
+                                    result.catch(() => {
+                                        console.log('Fullscreen not available on desktop');
+                                    });
+                                }
+                            }
                         }, 300);
                     }
                 } catch (error) {
