@@ -143,8 +143,11 @@
         
         /* Platform-specific full-screen adjustments */
         body.platform-mobile {
-            /* Mobile: use safe area insets for notches/bars */
-            padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
+            /* Mobile: use safe area insets for notches/bars and add extra padding for camera */
+            padding-top: max(env(safe-area-inset-top, 0px), 20px);
+            padding-left: env(safe-area-inset-left, 0);
+            padding-right: env(safe-area-inset-right, 0);
+            padding-bottom: env(safe-area-inset-bottom, 0);
         }
         
         body.platform-desktop {
@@ -1167,6 +1170,7 @@
         class TelegramAPI {
             constructor() {
                 this.app = window.Telegram?.WebApp;
+                this.backButtonCallback = null;
                 this.init();
             }
             
@@ -1181,6 +1185,9 @@
                     this.app.setHeaderColor('#F8F9FA');
                     this.app.setBackgroundColor('#F8F9FA');
                     this.app.enableClosingConfirmation();
+                    
+                    // Hide BackButton initially
+                    this.app.BackButton.hide();
                     
                     // Add platform class to body
                     const isMobile = ['android', 'ios'].includes(this.app.platform);
@@ -1212,6 +1219,33 @@
                 } catch (error) {
                     console.error('Telegram API init error:', error);
                 }
+            }
+            
+            // BackButton management
+            showBackButton(callback) {
+                if (!this.app?.BackButton) return;
+                
+                // Remove old callback if exists
+                if (this.backButtonCallback) {
+                    this.app.BackButton.offClick(this.backButtonCallback);
+                }
+                
+                // Set new callback
+                this.backButtonCallback = callback;
+                this.app.BackButton.onClick(this.backButtonCallback);
+                this.app.BackButton.show();
+            }
+            
+            hideBackButton() {
+                if (!this.app?.BackButton) return;
+                
+                // Remove callback
+                if (this.backButtonCallback) {
+                    this.app.BackButton.offClick(this.backButtonCallback);
+                    this.backButtonCallback = null;
+                }
+                
+                this.app.BackButton.hide();
             }
             
             haptic(type = 'light') {
@@ -1470,6 +1504,9 @@
 
         class WelcomeScreen extends Screen {
             render(data) {
+                // Hide BackButton on welcome screen (root screen)
+                this.app.telegram.hideBackButton();
+                
                 const hasSavedGame = data.hasSavedGame || false;
                 const completedGames = this.app.storage.getCompletedGames();
                 
@@ -1523,7 +1560,7 @@
             render(data) {
                 this.element.innerHTML = `
                     <div class="header">
-                        <button class="btn-back" id="btn-back">←</button>
+                        <div style="width: 40px;"></div>
                         <h2 class="header-title">Новая игра</h2>
                         <div style="width: 40px;"></div>
                     </div>
@@ -1539,8 +1576,8 @@
                 
                 this.renderPlayers();
                 
-                // Event listeners
-                this.element.querySelector('#btn-back').addEventListener('click', () => {
+                // Show Telegram BackButton
+                this.app.telegram.showBackButton(() => {
                     this.app.telegram.haptic('light');
                     this.app.router.navigate('welcome');
                 });
@@ -1616,9 +1653,12 @@
 
         class GameScreen extends Screen {
             render(data) {
+                // Hide BackButton on game screen (we use menu instead)
+                this.app.telegram.hideBackButton();
+                
                 this.element.innerHTML = `
                     <div class="header">
-                        <button class="btn-back hidden" id="btn-back">←</button>
+                        <div style="width: 40px;"></div>
                         <h2 class="header-title">Игра 101</h2>
                         <button class="btn-back" id="btn-menu">⋮</button>
                     </div>
@@ -1922,6 +1962,9 @@
 
         class FinishScreen extends Screen {
             render(data) {
+                // Hide BackButton on finish screen (final state)
+                this.app.telegram.hideBackButton();
+                
                 const { game, result } = data;
                 const loser = result.loser;
                 
@@ -2092,7 +2135,7 @@
                 
                 this.element.innerHTML = `
                     <div class="header">
-                        <button class="btn-back" id="btn-back">←</button>
+                        <div style="width: 40px;"></div>
                         <h2 class="header-title">История игр</h2>
                         ${games.length > 0 ? '<button class="btn-back" id="btn-clear">🗑️</button>' : '<div style="width: 40px;"></div>'}
                     </div>
@@ -2110,7 +2153,8 @@
                     });
                 }
                 
-                this.element.querySelector('#btn-back').addEventListener('click', () => {
+                // Show Telegram BackButton
+                this.app.telegram.showBackButton(() => {
                     this.app.telegram.haptic('light');
                     this.app.router.navigate('welcome');
                 });
