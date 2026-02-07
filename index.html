@@ -967,6 +967,7 @@
                     version: STORAGE_VERSION,
                     currentGame: null,
                     completedGames: [],
+                    players: [], // List of known player names
                     settings: {
                         hapticEnabled: true,
                         soundEnabled: false
@@ -1037,6 +1038,53 @@
                 if (data) {
                     data.completedGames = [];
                     data.currentGame = null;
+                    return this.save(data);
+                }
+                return false;
+            }
+            
+            // Player management
+            getPlayers() {
+                const data = this.load();
+                return data?.players || [];
+            }
+            
+            addPlayer(name) {
+                const data = this.load();
+                if (data) {
+                    const trimmedName = name.trim();
+                    if (!trimmedName) return false;
+                    
+                    // Check if player already exists
+                    if (!data.players) data.players = [];
+                    if (!data.players.includes(trimmedName)) {
+                        data.players.push(trimmedName);
+                        // Keep only last 20 unique players
+                        if (data.players.length > 20) {
+                            data.players = data.players.slice(-20);
+                        }
+                        return this.save(data);
+                    }
+                }
+                return false;
+            }
+            
+            removePlayer(name) {
+                const data = this.load();
+                if (data && data.players) {
+                    const index = data.players.indexOf(name);
+                    if (index > -1) {
+                        data.players.splice(index, 1);
+                        return this.save(data);
+                    }
+                }
+                return false;
+            }
+            
+            clearAllPlayers() {
+                const data = this.load();
+                if (data) {
+                    data.players = [];
                     return this.save(data);
                 }
                 return false;
@@ -1193,7 +1241,7 @@
                         });
                     }
                     
-                    // Request fullscreen on mobile (requires Telegram WebApp API 8.0+)
+                    // Request fullscreen on mobile only (requires Telegram WebApp API 8.0+)
                     if (['android', 'ios'].includes(this.app.platform) && this.app.isVersionAtLeast('8.0')) {
                         setTimeout(() => {
                             if (typeof this.app.requestFullscreen === 'function') {
@@ -1214,19 +1262,8 @@
                         }, 300);
                     }
                     
-                    // Request fullscreen on desktop too (for browsers that support it)
-                    if (!['android', 'ios'].includes(this.app.platform) && this.app.isVersionAtLeast('8.0')) {
-                        setTimeout(() => {
-                            if (typeof this.app.requestFullscreen === 'function') {
-                                const result = this.app.requestFullscreen();
-                                if (result && typeof result.then === 'function') {
-                                    result.catch(() => {
-                                        console.log('Fullscreen not available on desktop');
-                                    });
-                                }
-                            }
-                        }, 300);
-                    }
+                    // Desktop: keep in medium mode (no fullscreen)
+                    // This provides better UX on larger screens
                 } catch (error) {
                     console.error('Telegram API init error:', error);
                 }
@@ -1590,20 +1627,27 @@
             }
             
             render(data) {
+                const savedPlayers = this.app.storage.getPlayers();
+                
                 this.element.innerHTML = `
                     <div class="header">
                         <div style="width: 40px;"></div>
                         <h2 class="header-title">Новая игра</h2>
-                        <div style="width: 40px;"></div>
+                        ${savedPlayers.length > 0 ? '<button class="btn-back" id="btn-manage-players">⚙️</button>' : '<div style="width: 40px;"></div>'}
                     </div>
                     <div class="content">
                         <h3 class="mb-4">Игроки</h3>
                         <div class="player-list" id="player-list"></div>
                         <div class="add-player-container">
-                            <button class="btn btn-secondary btn-icon" id="btn-add-player">+</button>
+                            <button class="btn btn-secondary btn-icon" id="btn-add-player" style="font-size: 32px; font-weight: 300;">+</button>
                         </div>
                         <button class="btn btn-primary btn-lg" style="width: 100%;" id="btn-start">Начать игру</button>
                     </div>
+                    
+                    <!-- Datalist for autocomplete -->
+                    <datalist id="players-datalist">
+                        ${savedPlayers.map(p => `<option value="${p}">`).join('')}
+                    </datalist>
                 `;
                 
                 this.renderPlayers();
@@ -1625,6 +1669,15 @@
                 this.element.querySelector('#btn-start').addEventListener('click', () => {
                     this.startGame();
                 });
+                
+                // Manage players button
+                const manageBtn = this.element.querySelector('#btn-manage-players');
+                if (manageBtn) {
+                    manageBtn.addEventListener('click', () => {
+                        this.app.telegram.haptic('light');
+                        this.showManagePlayersModal();
+                    });
+                }
             }
             
             renderPlayers() {
@@ -1637,7 +1690,7 @@
                     item.className = 'player-item';
                     item.innerHTML = `
                         <div class="player-color" style="background-color: ${color};"></div>
-                        <input type="text" class="input" placeholder="Имя игрока ${index + 1}" value="${name}" data-index="${index}">
+                        <input type="text" class="input" list="players-datalist" placeholder="Имя игрока ${index + 1}" value="${name}" data-index="${index}" autocomplete="off">
                         ${this.players.length > 2 ? '<button class="btn-remove" data-index="' + index + '">×</button>' : '<div style="width: 32px;"></div>'}
                     `;
                     container.appendChild(item);
@@ -1679,7 +1732,93 @@
                     return;
                 }
                 
+                // Save player names to storage
+                playerNames.forEach(name => {
+                    this.app.storage.addPlayer(name);
+                });
+                
                 this.app.startNewGame(playerNames);
+            }
+            
+            showManagePlayersModal() {
+                const savedPlayers = this.app.storage.getPlayers();
+                
+                const modal = document.createElement('div');
+                modal.innerHTML = `
+                    <div class="modal-backdrop active" id="manage-backdrop">
+                        <div class="modal active" id="manage-modal">
+                            <div class="modal-header">
+                                <h3 class="modal-title">Управление игроками</h3>
+                                <button class="modal-close" id="modal-close">×</button>
+                            </div>
+                            <div class="modal-content">
+                                <p style="color: var(--color-text-secondary); margin-bottom: var(--space-4);">
+                                    Сохранено игроков: ${savedPlayers.length}
+                                </p>
+                                <div id="saved-players-list" style="max-height: 300px; overflow-y: auto; margin-bottom: var(--space-4);">
+                                    ${savedPlayers.length > 0 ? savedPlayers.map((player, index) => `
+                                        <div class="player-item" style="margin-bottom: var(--space-2);">
+                                            <div class="player-color" style="background-color: ${CHART_COLORS[index % CHART_COLORS.length]};"></div>
+                                            <span style="flex: 1; padding: var(--space-2);">${player}</span>
+                                            <button class="btn-remove" data-player-name="${player}">×</button>
+                                        </div>
+                                    `).join('') : '<p class="text-center text-secondary">Список пуст</p>'}
+                                </div>
+                            </div>
+                            <div class="modal-actions">
+                                ${savedPlayers.length > 0 ? '<button class="btn btn-danger" id="btn-clear-all">Очистить всё</button>' : ''}
+                                <button class="btn btn-secondary" id="btn-close">Закрыть</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(modal);
+                
+                const backdrop = modal.querySelector('#manage-backdrop');
+                const modalEl = modal.querySelector('#manage-modal');
+                
+                const closeModal = () => {
+                    modalEl.classList.remove('active');
+                    backdrop.classList.remove('active');
+                    setTimeout(() => {
+                        modal.remove();
+                        // Re-render to update datalist
+                        this.render({});
+                    }, 300);
+                };
+                
+                backdrop.addEventListener('click', (e) => {
+                    if (e.target === backdrop) closeModal();
+                });
+                
+                modal.querySelector('#modal-close').addEventListener('click', closeModal);
+                modal.querySelector('#btn-close').addEventListener('click', closeModal);
+                
+                // Remove individual player
+                modal.querySelectorAll('.btn-remove').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        this.app.telegram.haptic('light');
+                        const playerName = e.currentTarget.dataset.playerName;
+                        this.app.storage.removePlayer(playerName);
+                        closeModal();
+                    });
+                });
+                
+                // Clear all players
+                const clearAllBtn = modal.querySelector('#btn-clear-all');
+                if (clearAllBtn) {
+                    clearAllBtn.addEventListener('click', () => {
+                        this.app.telegram.haptic('light');
+                        this.app.telegram.showConfirm('Удалить всех игроков из списка?', (confirmed) => {
+                            if (confirmed) {
+                                this.app.storage.clearAllPlayers();
+                                this.app.telegram.haptic('success');
+                                closeModal();
+                            }
+                        });
+                    });
+                }
             }
         }
 
