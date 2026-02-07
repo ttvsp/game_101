@@ -2,403 +2,2080 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0D0D0D">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="description" content="Современное веб-приложение для игры в карточную игру 101">
+    <meta name="author" content="Denis">
     <title>Игра 101</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎮</text></svg>">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
+        /* ===== DESIGN SYSTEM 2026 ===== */
+        :root {
+            /* Base colors */
+            --color-bg-primary: #0D0D0D;
+            --color-bg-secondary: #1A1A1A;
+            --color-bg-tertiary: #262626;
+            --color-bg-elevated: #333333;
+            
+            /* Text colors */
+            --color-text-primary: #FFFFFF;
+            --color-text-secondary: #A0A0A0;
+            --color-text-tertiary: #707070;
+            --color-text-disabled: #4A4A4A;
+            
+            /* Accent colors */
+            --color-accent-primary: #3B82F6;
+            --color-accent-success: #10B981;
+            --color-accent-warning: #F59E0B;
+            --color-accent-error: #EF4444;
+            --color-accent-purple: #8B5CF6;
+            
+            /* Chart colors */
+            --color-chart-1: #3B82F6;
+            --color-chart-2: #10B981;
+            --color-chart-3: #F59E0B;
+            --color-chart-4: #EF4444;
+            --color-chart-5: #8B5CF6;
+            --color-chart-6: #EC4899;
+            --color-chart-7: #14B8A6;
+            --color-chart-8: #F97316;
+            
+            /* Borders */
+            --color-border-subtle: #262626;
+            --color-border-default: #333333;
+            --color-border-strong: #4A4A4A;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
+            
+            /* Spacing */
+            --space-1: 0.25rem;
+            --space-2: 0.5rem;
+            --space-3: 0.75rem;
+            --space-4: 1rem;
+            --space-5: 1.25rem;
+            --space-6: 1.5rem;
+            --space-8: 2rem;
+            --space-10: 2.5rem;
+            --space-12: 3rem;
+            --space-16: 4rem;
+            
+            /* Border radius */
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --radius-2xl: 1.5rem;
+            --radius-full: 9999px;
+            
+            /* Typography */
+            --font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', 'Roboto', sans-serif;
+            --font-size-xs: 0.75rem;
+            --font-size-sm: 0.875rem;
+            --font-size-base: 1rem;
+            --font-size-lg: 1.125rem;
+            --font-size-xl: 1.25rem;
+            --font-size-2xl: 1.5rem;
+            --font-size-3xl: 1.875rem;
+            --font-size-4xl: 2.25rem;
+            
+            --font-weight-normal: 400;
+            --font-weight-medium: 500;
+            --font-weight-semibold: 600;
+            --font-weight-bold: 700;
+            
+            /* Transitions */
+            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Z-index */
+            --z-base: 0;
+            --z-dropdown: 1000;
+            --z-sticky: 1100;
+            --z-fixed: 1200;
+            --z-modal-backdrop: 1300;
+            --z-modal: 1400;
+            --z-popover: 1500;
+            --z-tooltip: 1600;
+        }
+        
+        /* ===== RESET & BASE ===== */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        html {
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-size-adjust: 100%;
+        }
+        
         body {
-            background-color:#0a0a0a;
-            color:#f0f0f0;
-            font-family:'Roboto',sans-serif;
-            margin:0;
-            display:flex;
-            flex-direction:column;
-            align-items:center;
+            font-family: var(--font-family);
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-normal);
+            line-height: 1.5;
+            color: var(--color-text-primary);
+            background-color: var(--color-bg-primary);
+            overflow-x: hidden;
+            min-height: 100vh;
+            padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
         }
         
-        /* Platform-specific padding */
-        body.platform-mobile {
-            padding-top: calc(100px + env(safe-area-inset-top, 0px));
-            padding-left: 16px;
-            padding-right: 16px;
-            padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
-        }
-        body.platform-desktop {
-            padding-top: 20px;
-            padding-left: 20px;
-            padding-right: 20px;
-            padding-bottom: 20px;
+        /* ===== TYPOGRAPHY ===== */
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: var(--font-weight-bold);
+            line-height: 1.2;
+            color: var(--color-text-primary);
         }
         
-        h1, h2 {color:#ffffff;font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,0.2);}
-        h1 {font-size:2.5em;margin-bottom:40px;}
-        h2 {font-size:1.5em;margin:0 0 15px 0;}
-        body.platform-mobile h2 {font-size:1.3em;}
+        h1 { font-size: var(--font-size-4xl); }
+        h2 { font-size: var(--font-size-2xl); }
+        h3 { font-size: var(--font-size-xl); }
         
-        input, button {background-color:#1a1a1a;color:#f0f0f0;border:1px solid #282828;padding:12px;margin:6px;border-radius:12px;font-size:16px;transition:all 0.3s ease;box-shadow:0 2px 4px rgba(0,0,0,0.1);}
-        button {cursor:pointer;}
-        button:hover {background-color:#282828;border-color:#383838;box-shadow:0 4px 8px rgba(0,0,0,0.2);}
+        /* ===== LAYOUT ===== */
+        .app {
+            max-width: 800px;
+            margin: 0 auto;
+            min-height: 100vh;
+            position: relative;
+        }
         
-        .container {max-width:800px;width:100%;text-align:center;}
-        .players-input {display:flex;flex-direction:column;align-items:center;}
-        .player-input {display:flex;align-items:center;margin:6px 0;}
-        .player-input input {width:220px;margin-right:5px;}
-        .remove-player {background-color:transparent;border:none;color:#ff5252;font-size:26px;cursor:pointer;padding:0;width:32px;height:32px;display:flex;align-items:center;justify-content:center;transition:all 0.3s ease;}
-        .remove-player:hover {color:#ff1744;transform:scale(1.1);}
+        .screen {
+            display: none;
+            opacity: 0;
+            animation: fadeIn var(--transition-base) forwards;
+        }
         
-        .game-section {display:none;}
-        .game-columns {display:flex;justify-content:space-between;align-items:flex-start;}
-        body.platform-mobile .game-columns {flex-direction:column;align-items:center;gap:24px;}
+        .screen.active {
+            display: block;
+        }
         
-        .left-column, .right-column {width:48%;}
-        body.platform-mobile .left-column, 
-        body.platform-mobile .right-column {width:100%;max-width:400px;}
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
         
-        .scores {margin:0;display:flex;flex-direction:column;align-items:stretch;}
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-10px); }
+        }
+        
+        /* ===== HEADER ===== */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-4);
+            background-color: var(--color-bg-secondary);
+            border-bottom: 1px solid var(--color-border-subtle);
+            position: sticky;
+            top: 0;
+            z-index: var(--z-sticky);
+            backdrop-filter: blur(10px);
+            background-color: rgba(26, 26, 26, 0.8);
+        }
+        
+        .header-title {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+        }
+        
+        .btn-back {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            background: var(--color-bg-tertiary);
+            border: none;
+            color: var(--color-text-primary);
+            font-size: var(--font-size-xl);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .btn-back:hover {
+            background: var(--color-bg-elevated);
+            transform: scale(1.05);
+        }
+        
+        .btn-back:active {
+            transform: scale(0.95);
+        }
+        
+        /* ===== CONTENT ===== */
+        .content {
+            padding: var(--space-6);
+        }
+        
+        /* ===== BUTTONS ===== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-2);
+            padding: var(--space-3) var(--space-6);
+            border-radius: var(--radius-xl);
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-medium);
+            border: none;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            text-decoration: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 44px;
+        }
+        
+        .btn-primary {
+            background: var(--color-accent-primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2563EB;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        
+        .btn-success {
+            background: var(--color-accent-success);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+        }
+        
+        .btn-danger {
+            background: var(--color-accent-error);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #DC2626;
+        }
+        
+        .btn-secondary {
+            background: var(--color-bg-secondary);
+            color: var(--color-text-primary);
+            border: 1px solid var(--color-border-default);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--color-bg-tertiary);
+        }
+        
+        .btn-icon {
+            width: 44px;
+            height: 44px;
+            padding: 0;
+            border-radius: var(--radius-full);
+        }
+        
+        .btn-lg {
+            padding: var(--space-4) var(--space-8);
+            font-size: var(--font-size-lg);
+            min-height: 52px;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* ===== INPUTS ===== */
+        .input-group {
+            margin-bottom: var(--space-4);
+        }
+        
+        .input-label {
+            display: block;
+            margin-bottom: var(--space-2);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text-secondary);
+        }
+        
+        .input {
+            width: 100%;
+            padding: var(--space-3) var(--space-4);
+            background: var(--color-bg-secondary);
+            border: 1px solid var(--color-border-default);
+            border-radius: var(--radius-lg);
+            color: var(--color-text-primary);
+            font-size: var(--font-size-base);
+            font-family: var(--font-family);
+            transition: all var(--transition-fast);
+            min-height: 44px;
+        }
+        
+        .input:focus {
+            outline: none;
+            border-color: var(--color-accent-primary);
+            background: var(--color-bg-tertiary);
+        }
+        
+        .input::placeholder {
+            color: var(--color-text-tertiary);
+        }
+        
+        /* ===== CARDS ===== */
+        .card {
+            background: var(--color-bg-secondary);
+            border: 1px solid var(--color-border-subtle);
+            border-radius: var(--radius-xl);
+            padding: var(--space-4);
+            margin-bottom: var(--space-4);
+            transition: all var(--transition-fast);
+        }
+        
+        .card:hover {
+            background: var(--color-bg-tertiary);
+            border-color: var(--color-border-default);
+        }
+        
+        .card-title {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-semibold);
+            margin-bottom: var(--space-2);
+        }
+        
+        .card-content {
+            color: var(--color-text-secondary);
+        }
+        
+        /* ===== WELCOME SCREEN ===== */
+        .welcome {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: var(--space-6);
+            text-align: center;
+        }
+        
+        .welcome-title {
+            font-size: var(--font-size-4xl);
+            margin-bottom: var(--space-2);
+            background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .welcome-subtitle {
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-8);
+            font-size: var(--font-size-lg);
+        }
+        
+        .welcome-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+            width: 100%;
+            max-width: 320px;
+        }
+        
+        .welcome-button {
+            width: 100%;
+        }
+        
+        /* ===== PLAYER SETUP ===== */
+        .player-list {
+            margin-bottom: var(--space-6);
+        }
+        
+        .player-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            margin-bottom: var(--space-3);
+        }
+        
+        .player-item .input {
+            flex: 1;
+        }
+        
+        .player-color {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-md);
+            border: 2px solid var(--color-border-default);
+            flex-shrink: 0;
+        }
+        
+        .btn-remove {
+            background: transparent;
+            border: none;
+            color: var(--color-accent-error);
+            font-size: var(--font-size-2xl);
+            cursor: pointer;
+            padding: var(--space-2);
+            line-height: 1;
+            transition: all var(--transition-fast);
+        }
+        
+        .btn-remove:hover {
+            transform: scale(1.2);
+        }
+        
+        .add-player-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: var(--space-6);
+        }
+        
+        /* ===== GAME SCREEN ===== */
+        .game-layout {
+            display: grid;
+            gap: var(--space-6);
+        }
+        
+        .scoreboard {
+            background: var(--color-bg-secondary);
+            border-radius: var(--radius-2xl);
+            padding: var(--space-6);
+        }
+        
+        .scoreboard-title {
+            margin-bottom: var(--space-4);
+        }
+        
         .score-item {
-            background-color:#1a1a1a;
-            padding:14px;
-            margin:6px 0;
-            border-radius:12px;
-            width:100%;
-            box-sizing:border-box;
-            text-align:left;
-            box-shadow:0 3px 6px rgba(0,0,0,0.15);
-            white-space:nowrap;
-            overflow:hidden;
-            text-overflow:ellipsis;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-4);
+            margin-bottom: var(--space-3);
+            background: var(--color-bg-tertiary);
+            border-radius: var(--radius-lg);
+            border-left: 4px solid transparent;
+            transition: all var(--transition-fast);
         }
-        body.platform-mobile .score-item {padding:12px;}
         
-        .round-inputs {display:flex;flex-direction:column;align-items:stretch;width:100%;}
-        .round-input {
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            margin:6px 0;
-            width:100%;
+        .score-item.leader {
+            border-left-color: var(--color-accent-success);
+            background: rgba(16, 185, 129, 0.1);
         }
-        .round-input label {
-            width:120px;
-            text-align:right;
-            margin-right:12px;
-            color:#bbbbbb;
-            flex-shrink:0;
+        
+        .score-player {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
         }
-        .round-input input {
-            width:120px;
-            flex-shrink:0;
+        
+        .score-player-color {
+            width: 12px;
+            height: 12px;
+            border-radius: var(--radius-full);
         }
-        body.platform-mobile .round-input label {width:100px;}
-        body.platform-mobile .round-input input {width:100px;}
         
-        #submit-button {display:block;margin:12px auto 0;background-color:#1a1a1a;border-color:#282828;}
-        #submit-button:hover {background-color:#282828;}
-        
-        #chart-container {margin-top:20px;background-color:#1a1a1a;padding:18px;border-radius:12px;box-shadow:0 3px 6px rgba(0,0,0,0.15);height:400px;}
-        body.platform-mobile #chart-container {height:300px;padding:12px;}
-        
-        #game-over {color:#ff5252;font-size:1.8em;margin:20px 0;display:none;}
-        #restart-button {background-color:#4caf50;margin:12px 0 0 auto;display:block;}
-        #restart-button:hover {background-color:#388e3c;}
-        
-        .chart-section {width:100%; margin-top: 40px;}
-        
-        #add-player-button {border-radius:50%; width:44px; height:44px; font-size:26px; padding:0; line-height:1; margin:12px auto; display:block;box-shadow:0 2px 4px rgba(0,0,0,0.1);}
-        #start-game-button {font-size:20px; padding:16px 32px; margin-bottom:40px;background-color:#1a1a1a;border-color:#282828;}
-        #start-game-button:hover {background-color:#282828;}
-        
-        .player-setup-container {
-            background-color:#1a1a1a;
-            padding:24px;
-            border-radius:24px;
-            box-shadow:0 4px 8px rgba(0,0,0,0.2);
-            width:320px;
-            text-align:center;
+        .score-player-name {
+            font-weight: var(--font-weight-medium);
         }
-        body.platform-mobile .player-setup-container {width:100%;max-width:320px;}
+        
+        .score-value {
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+        }
+        
+        /* ===== ROUND INPUT ===== */
+        .round-inputs {
+            background: var(--color-bg-secondary);
+            border-radius: var(--radius-2xl);
+            padding: var(--space-6);
+        }
+        
+        .round-title {
+            margin-bottom: var(--space-4);
+        }
+        
+        .round-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            margin-bottom: var(--space-3);
+        }
+        
+        .round-label {
+            min-width: 100px;
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text-secondary);
+        }
+        
+        .round-item .input {
+            max-width: 120px;
+        }
+        
+        /* ===== CHART ===== */
+        .chart-container {
+            background: var(--color-bg-secondary);
+            border-radius: var(--radius-2xl);
+            padding: var(--space-6);
+            height: 400px;
+            position: relative;
+        }
+        
+        @media (max-width: 640px) {
+            .chart-container {
+                height: 300px;
+            }
+        }
+        
+        /* ===== HISTORY ===== */
+        .history-list {
+            display: grid;
+            gap: var(--space-4);
+        }
+        
+        .history-card {
+            cursor: pointer;
+        }
+        
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--space-3);
+        }
+        
+        .history-date {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-tertiary);
+        }
+        
+        .history-players {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-2);
+        }
+        
+        .history-player {
+            padding: var(--space-1) var(--space-3);
+            background: var(--color-bg-tertiary);
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-sm);
+        }
+        
+        .history-winner {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--color-accent-success);
+        }
+        
+        .history-loser {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--color-accent-error);
+        }
+        
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: var(--space-12) var(--space-6);
+        }
+        
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: var(--space-4);
+            opacity: 0.5;
+        }
+        
+        .empty-title {
+            font-size: var(--font-size-xl);
+            margin-bottom: var(--space-2);
+        }
+        
+        .empty-text {
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-6);
+        }
+        
+        /* ===== MODAL ===== */
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: var(--z-modal-backdrop);
+            backdrop-filter: blur(4px);
+        }
+        
+        .modal-backdrop.active {
+            display: block;
+            animation: fadeIn var(--transition-fast);
+        }
+        
+        .modal {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--color-bg-secondary);
+            border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+            padding: var(--space-6);
+            z-index: var(--z-modal);
+            transform: translateY(100%);
+            transition: transform var(--transition-base);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal.active {
+            transform: translateY(0);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-4);
+        }
+        
+        .modal-title {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+        }
+        
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--color-text-secondary);
+            font-size: var(--font-size-2xl);
+            cursor: pointer;
+            padding: var(--space-2);
+            line-height: 1;
+        }
+        
+        .modal-content {
+            margin-bottom: var(--space-6);
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: var(--space-3);
+        }
+        
+        .modal-actions .btn {
+            flex: 1;
+        }
+        
+        /* ===== TOAST ===== */
+        .toast-container {
+            position: fixed;
+            top: calc(env(safe-area-inset-top, 0) + var(--space-4));
+            left: var(--space-4);
+            right: var(--space-4);
+            z-index: var(--z-tooltip);
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+        }
+        
+        .toast {
+            background: var(--color-bg-elevated);
+            border: 1px solid var(--color-border-default);
+            border-radius: var(--radius-lg);
+            padding: var(--space-3) var(--space-4);
+            box-shadow: var(--shadow-lg);
+            pointer-events: auto;
+            animation: slideDown 0.3s ease-out;
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+        
+        .toast.toast-success {
+            border-left: 4px solid var(--color-accent-success);
+        }
+        
+        .toast.toast-warning {
+            border-left: 4px solid var(--color-accent-warning);
+        }
+        
+        .toast.toast-error {
+            border-left: 4px solid var(--color-accent-error);
+        }
+        
+        .toast.toast-info {
+            border-left: 4px solid var(--color-accent-primary);
+        }
+        
+        .toast-icon {
+            font-size: var(--font-size-xl);
+            line-height: 1;
+        }
+        
+        .toast-message {
+            flex: 1;
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+        }
+        
+        .toast.removing {
+            animation: slideUp 0.3s ease-out forwards;
+        }
+        
+        /* ===== UTILITIES ===== */
+        .text-center { text-align: center; }
+        .text-success { color: var(--color-accent-success); }
+        .text-error { color: var(--color-accent-error); }
+        .text-warning { color: var(--color-accent-warning); }
+        .mt-4 { margin-top: var(--space-4); }
+        .mt-6 { margin-top: var(--space-6); }
+        .mb-4 { margin-bottom: var(--space-4); }
+        .mb-6 { margin-bottom: var(--space-6); }
+        .hidden { display: none !important; }
+        
+        /* ===== ANIMATIONS ===== */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .loading {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes scoreUpdate {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); background-color: var(--color-bg-elevated); }
+            100% { transform: scale(1); }
+        }
+        
+        .score-updated {
+            animation: scoreUpdate 0.4s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .slide-up {
+            animation: slideUp 0.3s ease-out;
+        }
+        
+        /* ===== RESPONSIVE ===== */
+        @media (min-width: 768px) {
+            .game-layout {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .chart-container {
+                grid-column: 1 / -1;
+            }
+        }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h1>101</h1>
-       
-        <div id="setup-section" class="players-input">
-            <button id="start-game-button" onclick="startGame()">Начать игру</button>
-            <div class="player-setup-container">
-                <h2>Введите имена игроков</h2>
-                <div id="player-inputs"></div>
-                <button id="add-player-button" onclick="addPlayerInput()">+</button>
-            </div>
-        </div>
-       
-        <div id="game-section" class="game-section">
-            <div class="game-columns">
-                <div class="left-column">
-                    <h2>Текущий счет</h2>
-                    <div id="scores" class="scores"></div>
-                </div>
-                <div class="right-column">
-                    <h2>Ввод очков за раздачу</h2>
-                    <div id="round-inputs" class="round-inputs"></div>
-                </div>
-            </div>
-            <button id="submit-button" onclick="submitRound()">Записать результат</button>
-           
-            <h2 id="game-over">Игра окончена!</h2>
-           
-            <div class="chart-section">
-                <h2>Динамика счета</h2>
-                <div id="chart-container">
-                    <canvas id="score-chart"></canvas>
-                </div>
-                <button id="restart-button" onclick="restartGame()">Начать заново</button>
-            </div>
-        </div>
-    </div>
+    <div id="app" class="app"></div>
+
     <script>
-        let players = [];
-        let scores = {};
-        let history = {};
-        let roundNumber = 0;
-        let chart;
-        let playerInputCount = 0;
-        
-        window.onload = function() {
-            addPlayerInput();
-            addPlayerInput();
-        };
-        
-        function addPlayerInput(name = '') {
-            playerInputCount++;
-            const inputsDiv = document.getElementById('player-inputs');
-            const div = document.createElement('div');
-            div.className = 'player-input';
-            div.id = `player-input-${playerInputCount}`;
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.placeholder = 'Имя игрока';
-            input.value = name;
-            const removeBtn = document.createElement('button');
-            removeBtn.className = 'remove-player';
-            removeBtn.textContent = '×';
-            removeBtn.onclick = () => removePlayerInput(playerInputCount);
-            div.appendChild(input);
-            div.appendChild(removeBtn);
-            inputsDiv.appendChild(div);
-        }
-        
-        function removePlayerInput(id) {
-            const div = document.getElementById(`player-input-${id}`);
-            if (div) div.remove();
-        }
-        
-        function startGame() {
-            const inputDivs = document.querySelectorAll('.player-input input');
-            players = Array.from(inputDivs).map(input => input.value.trim()).filter(name => name !== '');
-            if (players.length < 2) {
-                alert('Добавьте хотя бы двух игроков!');
-                return;
+        'use strict';
+
+        // ===== CONSTANTS =====
+        const STORAGE_VERSION = '1.0';
+        const STORAGE_KEY = 'game101_data';
+        const CHART_COLORS = [
+            '#3B82F6', '#10B981', '#F59E0B', '#EF4444',
+            '#8B5CF6', '#EC4899', '#14B8A6', '#F97316'
+        ];
+
+        // ===== UTILITIES =====
+        const Utils = {
+            generateId() {
+                return Date.now().toString(36) + Math.random().toString(36).substr(2);
+            },
+            
+            formatDate(timestamp) {
+                const date = new Date(timestamp);
+                const now = new Date();
+                const diffMs = now - date;
+                const diffMins = Math.floor(diffMs / 60000);
+                
+                // Less than 1 hour ago
+                if (diffMins < 60) {
+                    if (diffMins < 1) return 'только что';
+                    return `${diffMins} мин назад`;
+                }
+                
+                // Less than 24 hours ago
+                if (diffMins < 1440) {
+                    const hours = Math.floor(diffMins / 60);
+                    return `${hours} ч назад`;
+                }
+                
+                // More than 24 hours - show full date
+                return new Intl.DateTimeFormat('ru-RU', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined,
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }).format(date);
+            },
+            
+            formatDuration(ms) {
+                const minutes = Math.floor(ms / 60000);
+                if (minutes < 60) return `${minutes} мин`;
+                const hours = Math.floor(minutes / 60);
+                const mins = minutes % 60;
+                return `${hours} ч ${mins} мин`;
+            },
+            
+            debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
             }
-            players.forEach(player => {
-                scores[player] = 0;
-                history[player] = [0];
-            });
-           
-            document.getElementById('setup-section').style.display = 'none';
-            document.getElementById('game-section').style.display = 'block';
-           
-            updateScoresDisplay();
-            updateRoundInputs();
-            initChart();
-            updateChart();
-            document.getElementById('game-over').style.display = 'none';
-            document.getElementById('round-inputs').style.display = 'flex';
-            document.getElementById('submit-button').style.display = 'block';
+        };
+
+        // ===== STORAGE MANAGER =====
+        class StorageManager {
+            constructor() {
+                this.init();
+            }
+            
+            init() {
+                try {
+                    const data = this.load();
+                    if (!data || data.version !== STORAGE_VERSION) {
+                        this.initializeStorage();
+                    }
+                } catch (error) {
+                    console.error('Storage init error:', error);
+                    this.initializeStorage();
+                }
+            }
+            
+            initializeStorage() {
+                const defaultData = {
+                    version: STORAGE_VERSION,
+                    currentGame: null,
+                    completedGames: [],
+                    settings: {
+                        hapticEnabled: true,
+                        soundEnabled: false
+                    }
+                };
+                this.save(defaultData);
+            }
+            
+            load() {
+                try {
+                    const data = localStorage.getItem(STORAGE_KEY);
+                    return data ? JSON.parse(data) : null;
+                } catch (error) {
+                    console.error('Storage load error:', error);
+                    return null;
+                }
+            }
+            
+            save(data) {
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                    return true;
+                } catch (error) {
+                    console.error('Storage save error:', error);
+                    return false;
+                }
+            }
+            
+            getCurrentGame() {
+                const data = this.load();
+                return data?.currentGame;
+            }
+            
+            saveCurrentGame(game) {
+                const data = this.load();
+                if (data) {
+                    data.currentGame = game;
+                    return this.save(data);
+                }
+                return false;
+            }
+            
+            clearCurrentGame() {
+                const data = this.load();
+                if (data) {
+                    data.currentGame = null;
+                    return this.save(data);
+                }
+                return false;
+            }
+            
+            getCompletedGames() {
+                const data = this.load();
+                return data?.completedGames || [];
+            }
+            
+            saveCompletedGame(game) {
+                const data = this.load();
+                if (data) {
+                    data.completedGames.unshift(game);
+                    return this.save(data);
+                }
+                return false;
+            }
+            
+            clearAllGames() {
+                const data = this.load();
+                if (data) {
+                    data.completedGames = [];
+                    data.currentGame = null;
+                    return this.save(data);
+                }
+                return false;
+            }
+        }
+
+        // ===== GAME ENGINE =====
+        class GameEngine {
+            constructor() {
+                this.id = null;
+                this.createdAt = null;
+                this.updatedAt = null;
+                this.players = [];
+                this.rounds = [];
+                this.status = 'setup';
+            }
+            
+            createGame(playerNames) {
+                if (playerNames.length < 2) {
+                    throw new Error('Нужно минимум 2 игрока');
+                }
+                
+                // Check for duplicates
+                const uniqueNames = new Set(playerNames);
+                if (uniqueNames.size !== playerNames.length) {
+                    throw new Error('Имена игроков должны быть уникальными');
+                }
+                
+                this.id = Utils.generateId();
+                this.createdAt = Date.now();
+                this.updatedAt = Date.now();
+                this.status = 'in_progress';
+                
+                this.players = playerNames.map((name, index) => ({
+                    id: Utils.generateId(),
+                    name: name.trim(),
+                    color: CHART_COLORS[index % CHART_COLORS.length],
+                    score: 0,
+                    scoreHistory: [0]
+                }));
+                
+                return this;
+            }
+            
+            submitRound(points) {
+                if (this.status !== 'in_progress') {
+                    throw new Error('Игра не активна');
+                }
+                
+                // Validate points
+                for (const player of this.players) {
+                    if (!(player.id in points)) {
+                        throw new Error(`Не указаны очки для ${player.name}`);
+                    }
+                    if (typeof points[player.id] !== 'number' || isNaN(points[player.id])) {
+                        throw new Error(`Некорректные очки для ${player.name}`);
+                    }
+                }
+                
+                const round = {
+                    roundNumber: this.rounds.length + 1,
+                    timestamp: Date.now(),
+                    points: { ...points }
+                };
+                
+                // Calculate new scores
+                const results = [];
+                const notifications = [];
+                
+                for (const player of this.players) {
+                    const pointsEarned = points[player.id];
+                    let newScore = player.score + pointsEarned;
+                    
+                    // Apply game rules
+                    if (newScore === 50) {
+                        newScore = 25; // Cutoff at 50
+                        notifications.push({ playerId: player.id, type: 'cutoff', message: `${player.name}: отсечка 50 → 25` });
+                    } else if (newScore === 101) {
+                        // Winner!
+                        results.push({ playerId: player.id, status: 'winner', score: newScore });
+                        notifications.push({ playerId: player.id, type: 'winner', message: `${player.name} победил!` });
+                    } else if (newScore > 101) {
+                        // Loser!
+                        results.push({ playerId: player.id, status: 'loser', score: newScore });
+                        notifications.push({ playerId: player.id, type: 'loser', message: `${player.name} проиграл (${newScore})` });
+                    } else if (newScore >= 95 && newScore <= 100) {
+                        // Close to winning
+                        notifications.push({ playerId: player.id, type: 'close', message: `${player.name} близко к победе!` });
+                    }
+                    
+                    player.score = newScore;
+                    player.scoreHistory.push(newScore);
+                }
+                
+                this.rounds.push(round);
+                this.updatedAt = Date.now();
+                
+                // Check for game end
+                const winner = results.find(r => r.status === 'winner');
+                const loser = results.find(r => r.status === 'loser');
+                
+                if (winner || loser) {
+                    this.status = 'finished';
+                    return {
+                        gameOver: true,
+                        winner: winner ? this.players.find(p => p.id === winner.playerId) : null,
+                        loser: loser ? this.players.find(p => p.id === loser.playerId) : null,
+                        notifications
+                    };
+                }
+                
+                return { gameOver: false, notifications };
+            }
+            
+            toJSON() {
+                return {
+                    id: this.id,
+                    createdAt: this.createdAt,
+                    updatedAt: this.updatedAt,
+                    players: this.players,
+                    rounds: this.rounds,
+                    status: this.status
+                };
+            }
+            
+            fromJSON(data) {
+                Object.assign(this, data);
+                return this;
+            }
+        }
+
+        // ===== TELEGRAM API =====
+        class TelegramAPI {
+            constructor() {
+                this.app = window.Telegram?.WebApp;
+                this.init();
+            }
+            
+            init() {
+                if (!this.app) return;
+                
+                try {
+                    this.app.ready();
+                    this.app.expand();
+                    this.app.disableVerticalSwipes();
+                    this.app.setHeaderColor('#0D0D0D');
+                    this.app.setBackgroundColor('#0D0D0D');
+                    this.app.enableClosingConfirmation();
+                } catch (error) {
+                    console.error('Telegram API init error:', error);
+                }
+            }
+            
+            haptic(type = 'light') {
+                if (!this.app?.HapticFeedback) return;
+                try {
+                    if (type === 'success' || type === 'error' || type === 'warning') {
+                        this.app.HapticFeedback.notificationOccurred(type);
+                    } else {
+                        this.app.HapticFeedback.impactOccurred(type);
+                    }
+                } catch (error) {
+                    console.error('Haptic error:', error);
+                }
+            }
+            
+            showAlert(message) {
+                if (this.app?.showAlert) {
+                    this.app.showAlert(message);
+                } else {
+                    alert(message);
+                }
+            }
+            
+            showConfirm(message, callback) {
+                if (this.app?.showConfirm) {
+                    this.app.showConfirm(message, callback);
+                } else {
+                    const result = confirm(message);
+                    callback(result);
+                }
+            }
+        }
+
+        // ===== ROUTER =====
+        class Router {
+            constructor(app) {
+                this.app = app;
+                this.currentScreen = null;
+            }
+            
+            navigate(screenName, data = {}) {
+                const oldScreen = this.currentScreen;
+                
+                if (oldScreen) {
+                    oldScreen.element.classList.remove('active');
+                    setTimeout(() => {
+                        oldScreen.element.style.display = 'none';
+                    }, 200);
+                }
+                
+                const screen = this.app.screens[screenName];
+                if (screen) {
+                    this.currentScreen = screen;
+                    screen.render(data);
+                    screen.element.style.display = 'block';
+                    setTimeout(() => {
+                        screen.element.classList.add('active');
+                    }, 10);
+                }
+                
+                window.scrollTo(0, 0);
+            }
+        }
+
+        // ===== TOAST MANAGER =====
+        class ToastManager {
+            constructor() {
+                this.container = null;
+                this.init();
+            }
+            
+            init() {
+                this.container = document.createElement('div');
+                this.container.className = 'toast-container';
+                document.body.appendChild(this.container);
+            }
+            
+            show(message, type = 'info', duration = 3000) {
+                const toast = document.createElement('div');
+                toast.className = `toast toast-${type}`;
+                
+                const icons = {
+                    success: '✓',
+                    warning: '⚠️',
+                    error: '✕',
+                    info: 'ℹ️'
+                };
+                
+                toast.innerHTML = `
+                    <span class="toast-icon">${icons[type] || icons.info}</span>
+                    <span class="toast-message">${message}</span>
+                `;
+                
+                this.container.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.classList.add('removing');
+                    setTimeout(() => toast.remove(), 300);
+                }, duration);
+            }
         }
         
-        function updateScoresDisplay() {
-            const scoresDiv = document.getElementById('scores');
-            scoresDiv.innerHTML = '';
-            players.forEach(player => {
-                const div = document.createElement('div');
-                div.className = 'score-item';
-                div.textContent = `${player}: ${scores[player]}`;
-                scoresDiv.appendChild(div);
-            });
+        // ===== APP =====
+        class App {
+            constructor() {
+                this.storage = new StorageManager();
+                this.telegram = new TelegramAPI();
+                this.game = new GameEngine();
+                this.router = new Router(this);
+                this.toast = new ToastManager();
+                this.chart = null;
+                this.screens = {};
+                
+                this.init();
+            }
+            
+            init() {
+                this.initScreens();
+                this.checkForSavedGame();
+            }
+            
+            initScreens() {
+                // Create all screens
+                this.screens.welcome = new WelcomeScreen(this);
+                this.screens.setup = new SetupScreen(this);
+                this.screens.game = new GameScreen(this);
+                this.screens.finish = new FinishScreen(this);
+                this.screens.history = new HistoryScreen(this);
+                
+                // Render to app container
+                const appElement = document.getElementById('app');
+                Object.values(this.screens).forEach(screen => {
+                    appElement.appendChild(screen.element);
+                });
+            }
+            
+            checkForSavedGame() {
+                const savedGame = this.storage.getCurrentGame();
+                if (savedGame) {
+                    // Has saved game
+                    this.router.navigate('welcome', { hasSavedGame: true });
+                } else {
+                    // No saved game
+                    this.router.navigate('welcome', { hasSavedGame: false });
+                }
+            }
+            
+            startNewGame(playerNames) {
+                try {
+                    this.game = new GameEngine();
+                    this.game.createGame(playerNames);
+                    this.saveGame();
+                    this.telegram.haptic('success');
+                    this.router.navigate('game');
+                } catch (error) {
+                    this.telegram.showAlert(error.message);
+                    this.telegram.haptic('error');
+                }
+            }
+            
+            continueGame() {
+                const savedGame = this.storage.getCurrentGame();
+                if (savedGame) {
+                    this.game = new GameEngine().fromJSON(savedGame);
+                    this.router.navigate('game');
+                }
+            }
+            
+            submitRound(points) {
+                try {
+                    const result = this.game.submitRound(points);
+                    this.saveGame();
+                    this.telegram.haptic('light');
+                    
+                    if (result.gameOver) {
+                        this.finishGame(result);
+                    }
+                    
+                    return result;
+                } catch (error) {
+                    this.telegram.showAlert(error.message);
+                    this.telegram.haptic('error');
+                    throw error;
+                }
+            }
+            
+            finishGame(result) {
+                const completedGame = {
+                    ...this.game.toJSON(),
+                    completedAt: Date.now(),
+                    duration: Date.now() - this.game.createdAt,
+                    winner: result.winner?.id || null,
+                    loser: result.loser?.id || null,
+                    totalRounds: this.game.rounds.length
+                };
+                
+                this.storage.saveCompletedGame(completedGame);
+                this.storage.clearCurrentGame();
+                this.telegram.haptic('success');
+                this.router.navigate('finish', { game: completedGame, result });
+            }
+            
+            forceEndGame() {
+                this.telegram.showConfirm('Завершить текущую игру без сохранения результата?', (confirmed) => {
+                    if (confirmed) {
+                        this.storage.clearCurrentGame();
+                        this.telegram.haptic('success');
+                        this.router.navigate('setup');
+                    }
+                });
+            }
+            
+            saveGame() {
+                if (this.game.status === 'in_progress') {
+                    this.storage.saveCurrentGame(this.game.toJSON());
+                }
+            }
         }
-        
-        function updateRoundInputs() {
-            const inputsDiv = document.getElementById('round-inputs');
-            inputsDiv.innerHTML = '';
-            players.forEach(player => {
-                const div = document.createElement('div');
-                div.className = 'round-input';
-                const label = document.createElement('label');
-                label.textContent = `${player}:`;
-                const input = document.createElement('input');
-                input.type = 'number';
-                input.id = `points-${player}`;
-                input.placeholder = 'Очки';
-                div.appendChild(label);
-                div.appendChild(input);
-                inputsDiv.appendChild(div);
-            });
+
+        // ===== SCREENS =====
+        class Screen {
+            constructor(app) {
+                this.app = app;
+                this.element = document.createElement('div');
+                this.element.className = 'screen';
+            }
+            
+            render(data) {
+                // Override in subclass
+            }
         }
-        
-        function submitRound() {
-            let allFilled = true;
-            const points = {};
-            players.forEach(player => {
-                const input = document.getElementById(`points-${player}`);
-                const value = parseInt(input.value, 10);
-                if (isNaN(value)) {
-                    allFilled = false;
+
+        class WelcomeScreen extends Screen {
+            render(data) {
+                const hasSavedGame = data.hasSavedGame || false;
+                const completedGames = this.app.storage.getCompletedGames();
+                
+                this.element.innerHTML = `
+                    <div class="welcome">
+                        <h1 class="welcome-title">101</h1>
+                        <p class="welcome-subtitle">Карточная игра</p>
+                        <div class="welcome-buttons">
+                            ${hasSavedGame ? '<button class="btn btn-primary btn-lg welcome-button" id="btn-continue">Продолжить игру</button>' : ''}
+                            <button class="btn ${hasSavedGame ? 'btn-secondary' : 'btn-primary'} btn-lg welcome-button" id="btn-new-game">Новая игра</button>
+                            ${completedGames.length > 0 ? '<button class="btn btn-secondary btn-lg welcome-button" id="btn-history">История игр</button>' : ''}
+                        </div>
+                    </div>
+                `;
+                
+                // Event listeners
+                if (hasSavedGame) {
+                    this.element.querySelector('#btn-continue')?.addEventListener('click', () => {
+                        this.app.telegram.haptic('light');
+                        this.app.continueGame();
+                    });
+                }
+                
+                this.element.querySelector('#btn-new-game').addEventListener('click', () => {
+                    this.app.telegram.haptic('light');
+                    if (hasSavedGame) {
+                        this.app.telegram.showConfirm('Начать новую игру? Текущая игра будет потеряна.', (confirmed) => {
+                            if (confirmed) {
+                                this.app.storage.clearCurrentGame();
+                                this.app.router.navigate('setup');
+                            }
+                        });
+                    } else {
+                        this.app.router.navigate('setup');
+                    }
+                });
+                
+                this.element.querySelector('#btn-history')?.addEventListener('click', () => {
+                    this.app.telegram.haptic('light');
+                    this.app.router.navigate('history');
+                });
+            }
+        }
+
+        class SetupScreen extends Screen {
+            constructor(app) {
+                super(app);
+                this.players = ['', ''];
+            }
+            
+            render(data) {
+                this.element.innerHTML = `
+                    <div class="header">
+                        <button class="btn-back" id="btn-back">←</button>
+                        <h2 class="header-title">Новая игра</h2>
+                        <div style="width: 40px;"></div>
+                    </div>
+                    <div class="content">
+                        <h3 class="mb-4">Игроки</h3>
+                        <div class="player-list" id="player-list"></div>
+                        <div class="add-player-container">
+                            <button class="btn btn-secondary btn-icon" id="btn-add-player">+</button>
+                        </div>
+                        <button class="btn btn-primary btn-lg" style="width: 100%;" id="btn-start">Начать игру</button>
+                    </div>
+                `;
+                
+                this.renderPlayers();
+                
+                // Event listeners
+                this.element.querySelector('#btn-back').addEventListener('click', () => {
+                    this.app.telegram.haptic('light');
+                    this.app.router.navigate('welcome');
+                });
+                
+                this.element.querySelector('#btn-add-player').addEventListener('click', () => {
+                    this.app.telegram.haptic('light');
+                    if (this.players.length < 8) {
+                        this.players.push('');
+                        this.renderPlayers();
+                    }
+                });
+                
+                this.element.querySelector('#btn-start').addEventListener('click', () => {
+                    this.startGame();
+                });
+            }
+            
+            renderPlayers() {
+                const container = this.element.querySelector('#player-list');
+                container.innerHTML = '';
+                
+                this.players.forEach((name, index) => {
+                    const color = CHART_COLORS[index % CHART_COLORS.length];
+                    const item = document.createElement('div');
+                    item.className = 'player-item';
+                    item.innerHTML = `
+                        <div class="player-color" style="background-color: ${color};"></div>
+                        <input type="text" class="input" placeholder="Имя игрока ${index + 1}" value="${name}" data-index="${index}">
+                        ${this.players.length > 2 ? '<button class="btn-remove" data-index="' + index + '">×</button>' : '<div style="width: 32px;"></div>'}
+                    `;
+                    container.appendChild(item);
+                });
+                
+                // Input listeners
+                container.querySelectorAll('input').forEach(input => {
+                    input.addEventListener('input', (e) => {
+                        const index = parseInt(e.target.dataset.index);
+                        this.players[index] = e.target.value;
+                    });
+                });
+                
+                // Remove listeners
+                container.querySelectorAll('.btn-remove').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        this.app.telegram.haptic('light');
+                        const index = parseInt(e.currentTarget.dataset.index);
+                        this.players.splice(index, 1);
+                        this.renderPlayers();
+                    });
+                });
+            }
+            
+            startGame() {
+                const playerNames = this.players.map(p => p.trim()).filter(p => p !== '');
+                
+                if (playerNames.length < 2) {
+                    this.app.telegram.showAlert('Добавьте минимум 2 игроков');
+                    this.app.telegram.haptic('error');
                     return;
                 }
-                points[player] = value;
-                input.value = '';
-            });
-           
-            if (!allFilled) {
-                alert('Введите очки для всех игроков!');
-                return;
-            }
-           
-            roundNumber++;
-            let gameOver = false;
-            players.forEach(player => {
-                let newScore = scores[player] + points[player];
-                if (newScore === 100) {
-                    newScore = 50;
-                } else if (newScore === 101) {
-                    newScore = 0;
-                } else if (newScore > 101) {
-                    gameOver = true;
-                    alert(`${player} проиграл! Счет превысил 101.`);
+                
+                // Check for duplicates
+                const uniqueNames = new Set(playerNames);
+                if (uniqueNames.size !== playerNames.length) {
+                    this.app.telegram.showAlert('Имена игроков должны быть уникальными');
+                    this.app.telegram.haptic('error');
+                    return;
                 }
-                scores[player] = newScore;
-                history[player].push(newScore);
-            });
-           
-            updateScoresDisplay();
-            updateChart();
-           
-            if (gameOver) {
-                document.getElementById('round-inputs').style.display = 'none';
-                document.getElementById('submit-button').style.display = 'none';
-                document.getElementById('game-over').style.display = 'block';
+                
+                this.app.startNewGame(playerNames);
             }
         }
-        
-        function initChart() {
-            const ctx = document.getElementById('score-chart').getContext('2d');
-            const datasets = players.map(player => ({
-                label: '  ' + player,
-                data: [],
-                borderColor: getBrightColor(),
-                backgroundColor: getBrightColor(),
-                fill: false,
-                tension: 0.1,
-                pointStyle: 'circle',
-                pointRadius: 5,
-                pointBackgroundColor: getBrightColor(),
-                pointBorderColor: 'transparent',
-                pointBorderWidth: 0
-            }));
-           
-            chart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: [],
-                    datasets: datasets
-                },
-                options: {
-                    scales: {
-                        y: {
-                            min: -10,
-                            max: 100,
-                            title: {display: true, text: 'Счет', color: '#ffffff', font: {size: 14, weight: 'bold'}},
-                            grid: {color: '#282828'},
-                            ticks: {color: '#ffffff', stepSize: 20, font: {size: 12, weight: 'bold'}}
+
+        class GameScreen extends Screen {
+            render(data) {
+                this.element.innerHTML = `
+                    <div class="header">
+                        <button class="btn-back hidden" id="btn-back">←</button>
+                        <h2 class="header-title">Игра 101</h2>
+                        <button class="btn-back" id="btn-menu">⋮</button>
+                    </div>
+                    <div class="content">
+                        <div class="game-layout">
+                            <div class="scoreboard">
+                                <h3 class="scoreboard-title">Счет (Раунд ${this.app.game.rounds.length})</h3>
+                                <div id="scores"></div>
+                            </div>
+                            <div class="round-inputs">
+                                <h3 class="round-title">Очки за раунд</h3>
+                                <div id="round-inputs"></div>
+                                <button class="btn btn-primary mt-4" style="width: 100%;" id="btn-submit">Записать</button>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="game-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                this.renderScores();
+                this.renderRoundInputs();
+                this.renderChart();
+                
+                // Event listeners
+                this.element.querySelector('#btn-menu').addEventListener('click', () => {
+                    this.app.telegram.haptic('light');
+                    this.showMenu();
+                });
+                
+                this.element.querySelector('#btn-submit').addEventListener('click', () => {
+                    this.submitRound();
+                });
+                
+                // Enter key support for round inputs
+                this.element.querySelectorAll('#round-inputs input').forEach((input, index, inputs) => {
+                    input.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            // Move to next input or submit
+                            if (index < inputs.length - 1) {
+                                inputs[index + 1].focus();
+                            } else {
+                                this.submitRound();
+                            }
+                        }
+                    });
+                });
+                
+                // Auto-focus first input
+                const firstInput = this.element.querySelector('#round-inputs input');
+                if (firstInput) {
+                    setTimeout(() => firstInput.focus(), 300);
+                }
+            }
+            
+            renderScores(animate = false) {
+                const container = this.element.querySelector('#scores');
+                container.innerHTML = '';
+                
+                // Sort by score
+                const sortedPlayers = [...this.app.game.players].sort((a, b) => b.score - a.score);
+                const leader = sortedPlayers[0];
+                
+                sortedPlayers.forEach((player, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'score-item';
+                    if (animate) {
+                        item.classList.add('score-updated');
+                        item.style.animationDelay = `${index * 50}ms`;
+                    }
+                    if (player.id === leader.id && player.score > 0) {
+                        item.classList.add('leader');
+                    }
+                    item.innerHTML = `
+                        <div class="score-player">
+                            <div class="score-player-color" style="background-color: ${player.color};"></div>
+                            <span class="score-player-name">${player.name}</span>
+                        </div>
+                        <span class="score-value">${player.score}</span>
+                    `;
+                    container.appendChild(item);
+                });
+            }
+            
+            renderRoundInputs() {
+                const container = this.element.querySelector('#round-inputs');
+                container.innerHTML = '';
+                
+                this.app.game.players.forEach(player => {
+                    const item = document.createElement('div');
+                    item.className = 'round-item';
+                    item.innerHTML = `
+                        <label class="round-label">${player.name}:</label>
+                        <input type="number" class="input" placeholder="0" data-player-id="${player.id}" inputmode="numeric">
+                    `;
+                    container.appendChild(item);
+                });
+            }
+            
+            renderChart() {
+                const canvas = this.element.querySelector('#game-chart');
+                const ctx = canvas.getContext('2d');
+                
+                // Destroy existing chart
+                if (this.app.chart) {
+                    this.app.chart.destroy();
+                }
+                
+                const datasets = this.app.game.players.map(player => ({
+                    label: player.name,
+                    data: player.scoreHistory,
+                    borderColor: player.color,
+                    backgroundColor: player.color,
+                    fill: false,
+                    tension: 0.3,
+                    borderWidth: 3,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }));
+                
+                const labels = Array.from({ length: this.app.game.rounds.length + 1 }, (_, i) => i);
+                
+                // Calculate Y axis range
+                const allScores = this.app.game.players.flatMap(p => p.scoreHistory);
+                const min = Math.min(...allScores, 0);
+                const max = Math.max(...allScores, 101);
+                const yMin = Math.floor(min / 20) * 20 - 10;
+                const yMax = Math.ceil(max / 20) * 20 + 10;
+                
+                this.app.chart = new Chart(ctx, {
+                    type: 'line',
+                    data: { labels, datasets },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false
                         },
-                        x: {
-                            title: {display: false},
-                            grid: {color: '#282828'},
-                            ticks: {color: '#ffffff', font: {size: 12, weight: 'bold'}, callback: function(value, index, ticks) { return index === 0 ? '' : value; }}
+                        scales: {
+                            y: {
+                                min: yMin,
+                                max: yMax,
+                                grid: { color: '#262626' },
+                                ticks: {
+                                    color: '#A0A0A0',
+                                    font: { size: 12, weight: 'bold' }
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Счет',
+                                    color: '#FFFFFF',
+                                    font: { size: 14, weight: 'bold' }
+                                }
+                            },
+                            x: {
+                                grid: { color: '#262626' },
+                                ticks: {
+                                    color: '#A0A0A0',
+                                    font: { size: 12, weight: 'bold' }
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Раунд',
+                                    color: '#FFFFFF',
+                                    font: { size: 14, weight: 'bold' }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: '#FFFFFF',
+                                    padding: 15,
+                                    font: { size: 13, weight: '500' },
+                                    usePointStyle: true,
+                                    pointStyle: 'circle'
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: '#1A1A1A',
+                                titleColor: '#FFFFFF',
+                                bodyColor: '#A0A0A0',
+                                borderColor: '#333333',
+                                borderWidth: 1,
+                                padding: 12,
+                                displayColors: true,
+                                callbacks: {
+                                    title: (items) => `Раунд ${items[0].label}`,
+                                    label: (item) => `${item.dataset.label}: ${item.parsed.y}`
+                                }
+                            }
                         }
-                    },
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {color: '#ffffff', usePointStyle: true, pointStyle: 'circle', boxWidth: 4, padding: 30, font: {size: 14, weight: 'bold'}}
-                        }
-                    },
-                    responsive: true,
-                    maintainAspectRatio: false
-                }
-            });
-        }
-        
-        function updateChart() {
-            chart.data.labels = Array.from({length: roundNumber + 1}, (_, i) => i);
-            players.forEach((player, index) => {
-                chart.data.datasets[index].data = history[player];
-            });
-
-            let allScores = Object.values(history).flat();
-            let globalMin = Math.min(...allScores);
-            let globalMax = Math.max(...allScores);
-
-            let effectiveMin = Math.min(-10, Math.floor(globalMin / 20) * 20);
-            let effectiveMax = Math.max(100, Math.ceil(globalMax / 20) * 20);
-
-            chart.options.scales.y.min = effectiveMin;
-            chart.options.scales.y.max = effectiveMax;
-
-            chart.update();
-        }
-        
-        function getBrightColor() {
-            const h = Math.random() * 360;
-            const s = 100;
-            const l = 70;
-            return `hsl(${h}, ${s}%, ${l}%)`;
-        }
-        
-        function restartGame() {
-            location.reload();
-        }
-
-        // Telegram WebApp initialization
-        const webApp = window.Telegram.WebApp;
-
-        const start = () => {
-            webApp.ready();
-            webApp.expand();
-            webApp.disableVerticalSwipes();
-            webApp.setHeaderColor('#0a0a0a');
-            webApp.setBackgroundColor('#0a0a0a');
-            
-            // Определяем платформу как в MarketLab
-            const isMobile = ['android','ios'].includes(webApp.platform);
-            document.body.classList.add(isMobile ? 'platform-mobile' : 'platform-desktop');
-            
-            // Проверяем существование метода requestFullscreen
-            if (webApp.requestFullscreen) {
-                setTimeout(() => {
-                    webApp.requestFullscreen().catch(() => webApp.expand());
-                }, 300);
+                    }
+                });
             }
-        };
-
-        if (window.Telegram?.WebApp) {
-            start();
-        } else {
-            window.addEventListener('TelegramWebAppReady', start, { once: true });
+            
+            submitRound() {
+                const inputs = this.element.querySelectorAll('#round-inputs input');
+                const points = {};
+                let allFilled = true;
+                
+                inputs.forEach(input => {
+                    const playerId = input.dataset.playerId;
+                    const value = input.value.trim();
+                    
+                    if (value === '') {
+                        allFilled = false;
+                        return;
+                    }
+                    
+                    const numValue = parseInt(value, 10);
+                    if (isNaN(numValue)) {
+                        allFilled = false;
+                        return;
+                    }
+                    
+                    points[playerId] = numValue;
+                });
+                
+                if (!allFilled) {
+                    this.app.telegram.showAlert('Введите очки для всех игроков');
+                    this.app.telegram.haptic('error');
+                    return;
+                }
+                
+                try {
+                    const result = this.app.submitRound(points);
+                    
+                    // Clear inputs
+                    inputs.forEach(input => input.value = '');
+                    
+                    // Re-render with animation
+                    this.renderScores(true);
+                    this.renderChart();
+                    
+                    // Update round number
+                    this.element.querySelector('.scoreboard-title').textContent = `Счет (Раунд ${this.app.game.rounds.length})`;
+                    
+                    // Show notifications
+                    if (result.notifications && result.notifications.length > 0) {
+                        result.notifications.forEach((notif, index) => {
+                            setTimeout(() => {
+                                const type = notif.type === 'winner' ? 'success' :
+                                           notif.type === 'loser' ? 'error' :
+                                           notif.type === 'cutoff' ? 'warning' : 'info';
+                                this.app.toast.show(notif.message, type);
+                            }, index * 500);
+                        });
+                    }
+                    
+                    // Auto-focus first input for next round
+                    if (!result.gameOver) {
+                        setTimeout(() => {
+                            const firstInput = this.element.querySelector('#round-inputs input');
+                            if (firstInput) firstInput.focus();
+                        }, 100);
+                        this.app.telegram.haptic('success');
+                    }
+                } catch (error) {
+                    // Error already handled in app
+                }
+            }
+            
+            showMenu() {
+                const modal = document.createElement('div');
+                modal.innerHTML = `
+                    <div class="modal-backdrop active" id="menu-backdrop">
+                        <div class="modal active" id="menu-modal">
+                            <div class="modal-header">
+                                <h3 class="modal-title">Меню</h3>
+                                <button class="modal-close" id="modal-close">×</button>
+                            </div>
+                            <div class="modal-content">
+                                <button class="btn btn-secondary mb-4" style="width: 100%;" id="btn-rules">Правила игры</button>
+                                <button class="btn btn-danger" style="width: 100%;" id="btn-end-game">Завершить игру</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(modal);
+                
+                const backdrop = modal.querySelector('#menu-backdrop');
+                const modalEl = modal.querySelector('#menu-modal');
+                
+                const closeModal = () => {
+                    modalEl.classList.remove('active');
+                    backdrop.classList.remove('active');
+                    setTimeout(() => modal.remove(), 300);
+                };
+                
+                backdrop.addEventListener('click', (e) => {
+                    if (e.target === backdrop) closeModal();
+                });
+                
+                modal.querySelector('#modal-close').addEventListener('click', closeModal);
+                
+                modal.querySelector('#btn-rules').addEventListener('click', () => {
+                    this.app.telegram.haptic('light');
+                    this.app.telegram.showAlert('Правила игры 101:\n\n1. Цель: набрать ровно 101 очко\n2. При достижении 50 очков → сброс до 25\n3. При 101 очке → победа\n4. При превышении 101 → проигрыш\n5. Допустимы отрицательные очки');
+                });
+                
+                modal.querySelector('#btn-end-game').addEventListener('click', () => {
+                    closeModal();
+                    this.app.forceEndGame();
+                });
+            }
         }
+
+        class FinishScreen extends Screen {
+            render(data) {
+                const { game, result } = data;
+                const winner = result.winner;
+                const loser = result.loser;
+                
+                let message = '';
+                if (winner) {
+                    message = `<p class="text-success" style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold);">🎉 ${winner.name} победил!</p>`;
+                } else if (loser) {
+                    message = `<p class="text-error" style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold);">😔 ${loser.name} проиграл</p>`;
+                }
+                
+                this.element.innerHTML = `
+                    <div class="header">
+                        <div style="width: 40px;"></div>
+                        <h2 class="header-title">Игра завершена</h2>
+                        <div style="width: 40px;"></div>
+                    </div>
+                    <div class="content">
+                        <div class="text-center mb-6">
+                            ${message}
+                            <p class="text-secondary">Раундов сыграно: ${game.totalRounds}</p>
+                            <p class="text-secondary">Длительность: ${Utils.formatDuration(game.duration)}</p>
+                        </div>
+                        
+                        <div class="scoreboard mb-6">
+                            <h3 class="scoreboard-title">Итоговый счет</h3>
+                            <div id="final-scores"></div>
+                        </div>
+                        
+                        <div class="chart-container mb-6">
+                            <canvas id="finish-chart"></canvas>
+                        </div>
+                        
+                        <div style="display: flex; gap: var(--space-3);">
+                            <button class="btn btn-secondary" style="flex: 1;" id="btn-history">История</button>
+                            <button class="btn btn-primary" style="flex: 1;" id="btn-new-game">Новая игра</button>
+                        </div>
+                    </div>
+                `;
+                
+                this.renderFinalScores(game, winner, loser);
+                this.renderChart(game);
+                
+                this.element.querySelector('#btn-history').addEventListener('click', () => {
+                    this.app.telegram.haptic('light');
+                    this.app.router.navigate('history');
+                });
+                
+                this.element.querySelector('#btn-new-game').addEventListener('click', () => {
+                    this.app.telegram.haptic('light');
+                    this.app.router.navigate('setup');
+                });
+            }
+            
+            renderFinalScores(game, winner, loser) {
+                const container = this.element.querySelector('#final-scores');
+                const sortedPlayers = [...game.players].sort((a, b) => b.score - a.score);
+                
+                sortedPlayers.forEach(player => {
+                    const item = document.createElement('div');
+                    item.className = 'score-item';
+                    
+                    if (winner && player.id === winner.id) {
+                        item.classList.add('leader');
+                    }
+                    
+                    item.innerHTML = `
+                        <div class="score-player">
+                            <div class="score-player-color" style="background-color: ${player.color};"></div>
+                            <span class="score-player-name">${player.name}</span>
+                            ${winner && player.id === winner.id ? '<span style="margin-left: 8px;">👑</span>' : ''}
+                            ${loser && player.id === loser.id ? '<span style="margin-left: 8px;">😔</span>' : ''}
+                        </div>
+                        <span class="score-value">${player.score}</span>
+                    `;
+                    container.appendChild(item);
+                });
+            }
+            
+            renderChart(game) {
+                const canvas = this.element.querySelector('#finish-chart');
+                const ctx = canvas.getContext('2d');
+                
+                const datasets = game.players.map(player => ({
+                    label: player.name,
+                    data: player.scoreHistory,
+                    borderColor: player.color,
+                    backgroundColor: player.color,
+                    fill: false,
+                    tension: 0.3,
+                    borderWidth: 3,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }));
+                
+                const labels = Array.from({ length: game.rounds.length + 1 }, (_, i) => i);
+                
+                const allScores = game.players.flatMap(p => p.scoreHistory);
+                const min = Math.min(...allScores, 0);
+                const max = Math.max(...allScores, 101);
+                const yMin = Math.floor(min / 20) * 20 - 10;
+                const yMax = Math.ceil(max / 20) * 20 + 10;
+                
+                new Chart(ctx, {
+                    type: 'line',
+                    data: { labels, datasets },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        scales: {
+                            y: {
+                                min: yMin,
+                                max: yMax,
+                                grid: { color: '#262626' },
+                                ticks: {
+                                    color: '#A0A0A0',
+                                    font: { size: 12, weight: 'bold' }
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Счет',
+                                    color: '#FFFFFF',
+                                    font: { size: 14, weight: 'bold' }
+                                }
+                            },
+                            x: {
+                                grid: { color: '#262626' },
+                                ticks: {
+                                    color: '#A0A0A0',
+                                    font: { size: 12, weight: 'bold' }
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Раунд',
+                                    color: '#FFFFFF',
+                                    font: { size: 14, weight: 'bold' }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: '#FFFFFF',
+                                    padding: 15,
+                                    font: { size: 13, weight: '500' },
+                                    usePointStyle: true,
+                                    pointStyle: 'circle'
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: '#1A1A1A',
+                                titleColor: '#FFFFFF',
+                                bodyColor: '#A0A0A0',
+                                borderColor: '#333333',
+                                borderWidth: 1,
+                                padding: 12,
+                                displayColors: true,
+                                callbacks: {
+                                    title: (items) => `Раунд ${items[0].label}`,
+                                    label: (item) => `${item.dataset.label}: ${item.parsed.y}`
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        class HistoryScreen extends Screen {
+            render(data) {
+                const games = this.app.storage.getCompletedGames();
+                
+                this.element.innerHTML = `
+                    <div class="header">
+                        <button class="btn-back" id="btn-back">←</button>
+                        <h2 class="header-title">История игр</h2>
+                        ${games.length > 0 ? '<button class="btn-back" id="btn-clear">🗑️</button>' : '<div style="width: 40px;"></div>'}
+                    </div>
+                    <div class="content">
+                        ${games.length > 0 ? '<div class="history-list" id="history-list"></div>' : this.renderEmptyState()}
+                    </div>
+                `;
+                
+                if (games.length > 0) {
+                    this.renderGames(games);
+                    
+                    this.element.querySelector('#btn-clear').addEventListener('click', () => {
+                        this.app.telegram.haptic('light');
+                        this.clearHistory();
+                    });
+                }
+                
+                this.element.querySelector('#btn-back').addEventListener('click', () => {
+                    this.app.telegram.haptic('light');
+                    this.app.router.navigate('welcome');
+                });
+            }
+            
+            renderGames(games) {
+                const container = this.element.querySelector('#history-list');
+                
+                games.forEach(game => {
+                    const winner = game.players.find(p => p.id === game.winner);
+                    const loser = game.players.find(p => p.id === game.loser);
+                    
+                    const card = document.createElement('div');
+                    card.className = 'card history-card';
+                    card.innerHTML = `
+                        <div class="history-header">
+                            <div>
+                                <div class="card-title">${Utils.formatDate(game.completedAt)}</div>
+                                <div class="history-date">${Utils.formatDuration(game.duration)} • ${game.totalRounds} раундов</div>
+                            </div>
+                        </div>
+                        <div class="history-players">
+                            ${game.players.map(p => {
+                                const isWinner = winner && p.id === winner.id;
+                                const isLoser = loser && p.id === loser.id;
+                                return `<span class="history-player ${isWinner ? 'history-winner' : ''} ${isLoser ? 'history-loser' : ''}">${p.name} (${p.score})</span>`;
+                            }).join('')}
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            }
+            
+            renderEmptyState() {
+                return `
+                    <div class="empty-state">
+                        <div class="empty-icon">📊</div>
+                        <h3 class="empty-title">Нет завершенных игр</h3>
+                        <p class="empty-text">Сыграйте первую игру, и здесь появится история</p>
+                    </div>
+                `;
+            }
+            
+            clearHistory() {
+                this.app.telegram.showConfirm('Удалить всю историю игр?', (confirmed) => {
+                    if (confirmed) {
+                        this.app.storage.clearAllGames();
+                        this.app.telegram.haptic('success');
+                        this.render({});
+                    }
+                });
+            }
+        }
+
+        // ===== INIT APP =====
+        window.addEventListener('DOMContentLoaded', () => {
+            window.app = new App();
+        });
     </script>
 </body>
 </html>
