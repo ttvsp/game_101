@@ -144,7 +144,7 @@
         /* Platform-specific full-screen adjustments */
         body.platform-mobile {
             /* Mobile: use safe area insets for notches/bars and add extra padding for camera */
-            padding-top: max(env(safe-area-inset-top, 0px), 20px);
+            padding-top: max(env(safe-area-inset-top, 0px), 60px);
             padding-left: env(safe-area-inset-left, 0);
             padding-right: env(safe-area-inset-right, 0);
             padding-bottom: env(safe-area-inset-bottom, 0);
@@ -1664,14 +1664,14 @@
 
         class GameScreen extends Screen {
             render(data) {
-                // Hide BackButton on game screen (we use menu instead)
+                // Hide BackButton on game screen (main game state)
                 this.app.telegram.hideBackButton();
                 
                 this.element.innerHTML = `
                     <div class="header">
                         <div style="width: 40px;"></div>
                         <h2 class="header-title">Игра 101</h2>
-                        <button class="btn-back" id="btn-menu">⋮</button>
+                        <div style="width: 40px;"></div>
                     </div>
                     <div class="content">
                         <div class="game-layout">
@@ -1688,6 +1688,10 @@
                                 <canvas id="game-chart"></canvas>
                             </div>
                         </div>
+                        <div style="text-align: center; margin-top: var(--space-6); padding-bottom: var(--space-6);">
+                            <button class="btn btn-secondary" id="btn-rules" style="margin-right: var(--space-3);">Правила</button>
+                            <button class="btn btn-danger" id="btn-end-game">Завершить игру</button>
+                        </div>
                     </div>
                 `;
                 
@@ -1696,9 +1700,14 @@
                 this.renderChart();
                 
                 // Event listeners
-                this.element.querySelector('#btn-menu').addEventListener('click', () => {
+                this.element.querySelector('#btn-rules').addEventListener('click', () => {
                     this.app.telegram.haptic('light');
-                    this.showMenu();
+                    this.app.telegram.showAlert('Правила игры 101:\n\n1. При достижении 50 очков → сброс до 25\n2. При достижении ровно 101 очка → сброс до 0\n3. При превышении 101 → ПРОИГРЫШ\n4. Игра продолжается пока кто-то не проиграет\n5. Допустимы отрицательные очки');
+                });
+                
+                this.element.querySelector('#btn-end-game').addEventListener('click', () => {
+                    this.app.telegram.haptic('light');
+                    this.app.forceEndGame();
                 });
                 
                 this.element.querySelector('#btn-submit').addEventListener('click', () => {
@@ -1923,51 +1932,6 @@
                 } catch (error) {
                     // Error already handled in app
                 }
-            }
-            
-            showMenu() {
-                const modal = document.createElement('div');
-                modal.innerHTML = `
-                    <div class="modal-backdrop active" id="menu-backdrop">
-                        <div class="modal active" id="menu-modal">
-                            <div class="modal-header">
-                                <h3 class="modal-title">Меню</h3>
-                                <button class="modal-close" id="modal-close">×</button>
-                            </div>
-                            <div class="modal-content">
-                                <button class="btn btn-secondary mb-4" style="width: 100%;" id="btn-rules">Правила игры</button>
-                                <button class="btn btn-danger" style="width: 100%;" id="btn-end-game">Завершить игру</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                
-                document.body.appendChild(modal);
-                
-                const backdrop = modal.querySelector('#menu-backdrop');
-                const modalEl = modal.querySelector('#menu-modal');
-                
-                const closeModal = () => {
-                    modalEl.classList.remove('active');
-                    backdrop.classList.remove('active');
-                    setTimeout(() => modal.remove(), 300);
-                };
-                
-                backdrop.addEventListener('click', (e) => {
-                    if (e.target === backdrop) closeModal();
-                });
-                
-                modal.querySelector('#modal-close').addEventListener('click', closeModal);
-                
-                modal.querySelector('#btn-rules').addEventListener('click', () => {
-                    this.app.telegram.haptic('light');
-                    this.app.telegram.showAlert('Правила игры 101:\n\n1. При достижении 50 очков → сброс до 25\n2. При достижении ровно 101 очка → сброс до 0\n3. При превышении 101 → ПРОИГРЫШ\n4. Игра продолжается пока кто-то не проиграет\n5. Допустимы отрицательные очки');
-                });
-                
-                modal.querySelector('#btn-end-game').addEventListener('click', () => {
-                    closeModal();
-                    this.app.forceEndGame();
-                });
             }
         }
 
