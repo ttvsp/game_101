@@ -2444,12 +2444,20 @@
                 
                 this.element.innerHTML = `
                     <div class="header">
-                        ${games.length > 0 ? '<button class="btn-back" id="btn-clear">🗑️</button>' : '<div style="width: 40px;"></div>'}
+                        <div style="width: 40px;"></div>
                         <h2 class="header-title">История игр</h2>
                         <div style="width: 40px;"></div>
                     </div>
                     <div class="content">
-                        ${games.length > 0 ? '<div class="history-list" id="history-list"></div>' : this.renderEmptyState()}
+                        ${games.length > 0 ? `
+                            <div style="text-align: right; margin-bottom: var(--space-4);">
+                                <button class="btn btn-secondary" id="btn-clear">
+                                    <span style="margin-right: var(--space-2);">🗑️</span>
+                                    Очистить историю
+                                </button>
+                            </div>
+                            <div class="history-list" id="history-list"></div>
+                        ` : this.renderEmptyState()}
                     </div>
                 `;
                 
