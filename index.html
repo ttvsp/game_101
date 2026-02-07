@@ -224,6 +224,18 @@
             width: 100%;
         }
         
+        /* Fill area above sticky header on mobile to prevent content showing through */
+        body.platform-mobile .header::before {
+            content: '';
+            position: absolute;
+            top: calc(-1 * max(env(safe-area-inset-top, 0px), 32px));
+            left: 0;
+            right: 0;
+            height: max(env(safe-area-inset-top, 0px), 32px);
+            background-color: #FFFFFF;
+            z-index: -1;
+        }
+        
         /* Mobile header sticky positioning with safe area */
         body.platform-mobile .header {
             top: max(env(safe-area-inset-top, 0px), 32px);
@@ -725,88 +737,122 @@
             flex: 1;
         }
         
-        /* ===== TOAST ===== */
-        .toast-container {
+        /* ===== NOTIFICATION SYSTEM (Professional 2026) ===== */
+        .notification {
             position: fixed;
-            top: calc(env(safe-area-inset-top, 0) + var(--space-4));
+            top: calc(env(safe-area-inset-top, 0px) + 100px);
             left: 50%;
             transform: translateX(-50%);
-            z-index: var(--z-tooltip);
+            z-index: 10004;
+            width: 100%;
+            max-width: 380px;
+            padding: 0 16px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            opacity: 0;
             pointer-events: none;
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-2);
-            align-items: center;
-            width: auto;
-            max-width: calc(100% - var(--space-8));
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform: translate(-50%, -20px) scale(0.95);
         }
-        
-        .toast {
-            background: var(--color-bg-elevated);
-            border: 1px solid var(--color-border-default);
-            border-radius: var(--radius-lg);
-            padding: var(--space-3) var(--space-4);
-            box-shadow: var(--shadow-lg);
+
+        body.platform-desktop .notification {
+            top: 12px;
+            width: 360px;
+        }
+
+        .notification.show {
+            opacity: 1;
             pointer-events: auto;
-            animation: slideDown 0.3s ease-out;
+            transform: translate(-50%, 0) scale(1);
+        }
+
+        .notification-content {
             display: flex;
             align-items: center;
-            gap: var(--space-3);
-            min-width: 280px;
-            max-width: 400px;
+            padding: 12px;
+            gap: 12px;
         }
-        
-        .toast.toast-success {
-            border-left: 4px solid var(--color-accent-success);
+
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
         }
-        
-        .toast.toast-warning {
-            border-left: 4px solid var(--color-accent-warning);
+
+        .notification-icon::before {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 40px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
         }
-        
-        .toast.toast-error {
-            border-left: 4px solid var(--color-accent-error);
+
+        .notification-icon.icon-success::before {
+            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='40' height='40' rx='8' fill='%2360D236'/%3E%3Cpath d='M26.1249 15.1748C26.3972 14.7293 26.2567 14.1474 25.8112 13.8751C25.3656 13.6028 24.7837 13.7433 24.5114 14.1888L18.6824 23.7272L15.3933 19.9683C15.0495 19.5754 14.4522 19.5355 14.0592 19.8794C13.6663 20.2232 13.6264 20.8205 13.9703 21.2135L18.1067 25.9408C18.3048 26.1672 18.5988 26.2858 18.8986 26.2602C19.1983 26.2346 19.468 26.0679 19.6249 25.8112L26.1249 15.1748Z' fill='white'/%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M33 20C33 27.1797 27.1797 33 20 33C12.8203 33 7 27.1797 7 20C7 12.8203 12.8203 7 20 7C27.1797 7 33 12.8203 33 20ZM30.8333 20C30.8333 25.9831 25.9831 30.8333 20 30.8333C14.0169 30.8333 9.16667 25.9831 9.16667 20C9.16667 14.0169 14.0169 9.16667 20 9.16667C25.9831 9.16667 30.8333 14.0169 30.8333 20Z' fill='white'/%3E%3C/svg%3E");
         }
-        
-        .toast.toast-info {
-            border-left: 4px solid var(--color-accent-primary);
+
+        .notification-icon.icon-error::before {
+            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='40' height='40' rx='8' fill='%23FF3A30'/%3E%3Cpath d='M28.9929 13.0214C29.5491 12.4652 29.5491 11.5634 28.9929 11.0071C28.4366 10.4509 27.5348 10.4509 26.9786 11.0071L20 17.9857L13.0214 11.0071C12.4652 10.4509 11.5634 10.4509 11.0071 11.0071C10.4509 11.5634 10.4509 12.4652 11.0071 13.0214L17.9857 20L11.0071 26.9786C10.4509 27.5348 10.4509 28.4366 11.0071 28.9929C11.5634 29.5491 12.4652 29.5491 13.0214 28.9929L20 22.0143L26.9786 28.9929C27.5348 29.5491 28.4366 29.5491 28.9929 28.9929C29.5491 28.4366 29.5491 27.5348 28.9929 26.9786L22.0143 20L28.9929 13.0214Z' fill='white'/%3E%3C/svg%3E");
         }
-        
-        .toast-icon {
-            font-size: var(--font-size-xl);
-            line-height: 1;
+
+        .notification-icon.icon-warning::before {
+            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='40' height='40' rx='8' fill='%23FF9500'/%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M18.9279 10.2305C18.1455 10.583 17.5462 11.6331 16.3477 13.7333L10.7171 23.6C9.51851 25.7002 8.91923 26.7504 9.00875 27.6121C9.08684 28.3637 9.47649 29.0465 10.0808 29.4907C10.7737 30 11.9723 30 14.3694 30H25.6306C28.0277 30 29.2263 30 29.9192 29.4907C30.5235 29.0465 30.9132 28.3637 30.9912 27.6121C31.0808 26.7504 30.4815 25.7002 29.2829 23.6L23.6523 13.7333C22.4538 11.6331 21.8545 10.583 21.0721 10.2305C20.3897 9.92315 19.6103 9.92315 18.9279 10.2305ZM20.9498 16.7554L20.8497 22.489C20.8416 22.9577 20.4637 23.3333 20.0003 23.3333C19.537 23.3333 19.1591 22.9577 19.1509 22.489L19.0509 16.7554C19.0416 16.2183 19.4694 15.7778 20.0003 15.7778C20.5313 15.7778 20.9591 16.2183 20.9498 16.7554ZM21.0983 25.5556C21.0983 26.1692 20.6066 26.6667 20 26.6667C19.3934 26.6667 18.9017 26.1692 18.9017 25.5556C18.9017 24.9419 19.3934 24.4444 20 24.4444C20.6066 24.4444 21.0983 24.9419 21.0983 25.5556Z' fill='white'/%3E%3C/svg%3E");
         }
-        
-        .toast-message {
+
+        .notification-text {
             flex: 1;
-            font-size: var(--font-size-sm);
-            font-weight: var(--font-weight-medium);
+            min-width: 0;
         }
-        
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+
+        .notification-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #000;
+            line-height: 1.3;
+            margin-bottom: 2px;
         }
-        
-        @keyframes slideUp {
-            from {
-                opacity: 1;
-                transform: translateY(0);
-            }
-            to {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
+
+        .notification-desc {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.4;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-        
-        .toast.removing {
-            animation: slideUp 0.3s ease-out forwards;
+
+        .notification-close {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+
+        .notification-close:hover {
+            opacity: 1;
+        }
+
+        .notification-close::before {
+            content: '';
+            display: block;
+            width: 16px;
+            height: 16px;
+            background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M0.334735 0.334735C0.781049 -0.111578 1.50467 -0.111578 1.95098 0.334735L8 6.38376L14.049 0.334735C14.4953 -0.111578 15.219 -0.111578 15.6653 0.334735C16.1116 0.781049 16.1116 1.50467 15.6653 1.95098L9.61624 8L15.6653 14.049C16.1116 14.4953 16.1116 15.219 15.6653 15.6653C15.219 16.1116 14.4953 16.1116 14.049 15.6653L8 9.61624L1.95098 15.6653C1.50467 16.1116 0.781049 16.1116 0.334735 15.6653C-0.111578 15.219 -0.111578 14.4953 0.334735 14.049L6.38376 8L0.334735 1.95098C-0.111578 1.50467 -0.111578 0.781049 0.334735 0.334735Z' fill='black'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
         }
         
         /* ===== UTILITIES ===== */
@@ -1416,41 +1462,85 @@
             }
         }
 
-        // ===== TOAST MANAGER =====
+        // ===== NOTIFICATION MANAGER (Professional 2026) =====
         class ToastManager {
             constructor() {
-                this.container = null;
+                this.element = null;
+                this.isVisible = false;
+                this.timeoutId = null;
                 this.init();
             }
             
             init() {
-                this.container = document.createElement('div');
-                this.container.className = 'toast-container';
-                document.body.appendChild(this.container);
+                // Create notification element
+                this.element = document.createElement('div');
+                this.element.className = 'notification';
+                this.element.innerHTML = `
+                    <div class="notification-content">
+                        <div class="notification-icon"></div>
+                        <div class="notification-text">
+                            <div class="notification-title"></div>
+                            <div class="notification-desc"></div>
+                        </div>
+                        <div class="notification-close"></div>
+                    </div>
+                `;
+                document.body.appendChild(this.element);
+                
+                // Add close handler
+                const closeBtn = this.element.querySelector('.notification-close');
+                closeBtn.addEventListener('click', () => this.hide());
             }
             
-            show(message, type = 'info', duration = 3000) {
-                const toast = document.createElement('div');
-                toast.className = `toast toast-${type}`;
+            show(title, description = '', type = 'error', duration = 3000) {
+                // Clear existing timeout
+                if (this.timeoutId) {
+                    clearTimeout(this.timeoutId);
+                    this.timeoutId = null;
+                }
                 
-                const icons = {
-                    success: '✓',
-                    warning: '⚠️',
-                    error: '✕',
-                    info: 'ℹ️'
-                };
+                // Update content
+                const iconEl = this.element.querySelector('.notification-icon');
+                const titleEl = this.element.querySelector('.notification-title');
+                const descEl = this.element.querySelector('.notification-desc');
                 
-                toast.innerHTML = `
-                    <span class="toast-icon">${icons[type] || icons.info}</span>
-                    <span class="toast-message">${message}</span>
-                `;
+                iconEl.className = `notification-icon icon-${type}`;
+                titleEl.textContent = title;
+                descEl.textContent = description;
                 
-                this.container.appendChild(toast);
+                // Show notification
+                this.isVisible = true;
+                requestAnimationFrame(() => {
+                    this.element.classList.add('show');
+                });
                 
-                setTimeout(() => {
-                    toast.classList.add('removing');
-                    setTimeout(() => toast.remove(), 300);
+                // Auto-hide
+                this.timeoutId = setTimeout(() => {
+                    this.hide();
                 }, duration);
+            }
+            
+            hide() {
+                if (this.timeoutId) {
+                    clearTimeout(this.timeoutId);
+                    this.timeoutId = null;
+                }
+                
+                this.element.classList.remove('show');
+                this.isVisible = false;
+            }
+            
+            // Backward compatibility aliases
+            showSuccess(title, description) {
+                this.show(title, description, 'success');
+            }
+            
+            showError(title, description) {
+                this.show(title, description, 'error');
+            }
+            
+            showWarning(title, description) {
+                this.show(title, description, 'warning');
             }
         }
         
