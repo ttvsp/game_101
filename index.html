@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#0D0D0D">
+    <meta name="theme-color" content="#F8F9FA">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="description" content="Современное веб-приложение для игры в карточную игру 101">
@@ -15,26 +15,26 @@
     <style>
         /* ===== DESIGN SYSTEM 2026 ===== */
         :root {
-            /* Base colors */
-            --color-bg-primary: #0D0D0D;
-            --color-bg-secondary: #1A1A1A;
-            --color-bg-tertiary: #262626;
-            --color-bg-elevated: #333333;
+            /* Base colors - Light theme */
+            --color-bg-primary: #F8F9FA;
+            --color-bg-secondary: #FFFFFF;
+            --color-bg-tertiary: #F1F3F5;
+            --color-bg-elevated: #FFFFFF;
             
             /* Text colors */
-            --color-text-primary: #FFFFFF;
-            --color-text-secondary: #A0A0A0;
-            --color-text-tertiary: #707070;
-            --color-text-disabled: #4A4A4A;
+            --color-text-primary: #1A1A1A;
+            --color-text-secondary: #6B7280;
+            --color-text-tertiary: #9CA3AF;
+            --color-text-disabled: #D1D5DB;
             
-            /* Accent colors */
+            /* Accent colors - Vibrant and modern */
             --color-accent-primary: #3B82F6;
             --color-accent-success: #10B981;
             --color-accent-warning: #F59E0B;
             --color-accent-error: #EF4444;
             --color-accent-purple: #8B5CF6;
             
-            /* Chart colors */
+            /* Chart colors - Bright and distinguishable */
             --color-chart-1: #3B82F6;
             --color-chart-2: #10B981;
             --color-chart-3: #F59E0B;
@@ -45,15 +45,15 @@
             --color-chart-8: #F97316;
             
             /* Borders */
-            --color-border-subtle: #262626;
-            --color-border-default: #333333;
-            --color-border-strong: #4A4A4A;
+            --color-border-subtle: #E5E7EB;
+            --color-border-default: #D1D5DB;
+            --color-border-strong: #9CA3AF;
             
-            /* Shadows */
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
-            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
+            /* Shadows - Softer for light theme */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.12);
             
             /* Spacing */
             --space-1: 0.25rem;
@@ -220,7 +220,7 @@
             top: 0;
             z-index: var(--z-sticky);
             backdrop-filter: blur(10px);
-            background-color: rgba(26, 26, 26, 0.8);
+            background-color: rgba(255, 255, 255, 0.9);
         }
         
         .header-title {
@@ -279,16 +279,18 @@
         .btn-primary {
             background: var(--color-accent-primary);
             color: white;
+            box-shadow: var(--shadow-sm);
         }
         
         .btn-primary:hover {
             background: #2563EB;
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
         }
         
         .btn-primary:active {
             transform: translateY(0);
+            box-shadow: var(--shadow-sm);
         }
         
         .btn-success {
@@ -377,15 +379,17 @@
         .card {
             background: var(--color-bg-secondary);
             border: 1px solid var(--color-border-subtle);
-            border-radius: var(--radius-xl);
-            padding: var(--space-4);
+            border-radius: var(--radius-2xl);
+            padding: var(--space-6);
             margin-bottom: var(--space-4);
             transition: all var(--transition-fast);
+            box-shadow: var(--shadow-sm);
         }
         
         .card:hover {
-            background: var(--color-bg-tertiary);
+            box-shadow: var(--shadow-md);
             border-color: var(--color-border-default);
+            transform: translateY(-2px);
         }
         
         .card-title {
@@ -412,10 +416,9 @@
         .welcome-title {
             font-size: var(--font-size-4xl);
             margin-bottom: var(--space-2);
-            background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--color-text-primary);
+            font-weight: 800;
+            letter-spacing: -0.02em;
         }
         
         .welcome-subtitle {
@@ -491,6 +494,8 @@
             background: var(--color-bg-secondary);
             border-radius: var(--radius-2xl);
             padding: var(--space-6);
+            border: 1px solid var(--color-border-subtle);
+            box-shadow: var(--shadow-sm);
         }
         
         .scoreboard-title {
@@ -540,6 +545,8 @@
             background: var(--color-bg-secondary);
             border-radius: var(--radius-2xl);
             padding: var(--space-6);
+            border: 1px solid var(--color-border-subtle);
+            box-shadow: var(--shadow-sm);
         }
         
         .round-title {
@@ -570,6 +577,8 @@
             padding: var(--space-6);
             height: 400px;
             position: relative;
+            border: 1px solid var(--color-border-subtle);
+            box-shadow: var(--shadow-sm);
         }
         
         @media (max-width: 640px) {
@@ -611,11 +620,6 @@
             background: var(--color-bg-tertiary);
             border-radius: var(--radius-full);
             font-size: var(--font-size-sm);
-        }
-        
-        .history-winner {
-            background: rgba(16, 185, 129, 0.2);
-            color: var(--color-accent-success);
         }
         
         .history-loser {
@@ -718,13 +722,16 @@
         .toast-container {
             position: fixed;
             top: calc(env(safe-area-inset-top, 0) + var(--space-4));
-            left: var(--space-4);
-            right: var(--space-4);
+            left: 50%;
+            transform: translateX(-50%);
             z-index: var(--z-tooltip);
             pointer-events: none;
             display: flex;
             flex-direction: column;
             gap: var(--space-2);
+            align-items: center;
+            width: auto;
+            max-width: calc(100% - var(--space-8));
         }
         
         .toast {
@@ -738,6 +745,8 @@
             display: flex;
             align-items: center;
             gap: var(--space-3);
+            min-width: 280px;
+            max-width: 400px;
         }
         
         .toast.toast-success {
@@ -1100,7 +1109,6 @@
                 
                 // Calculate new scores
                 const results = [];
-                const notifications = [];
                 
                 for (const player of this.players) {
                     const pointsEarned = points[player.id];
@@ -1109,18 +1117,12 @@
                     // Apply game rules
                     if (newScore === 50) {
                         newScore = 25; // Cutoff at 50
-                        notifications.push({ playerId: player.id, type: 'cutoff', message: `${player.name}: отсечка 50 → 25` });
                     } else if (newScore === 101) {
-                        // Winner!
-                        results.push({ playerId: player.id, status: 'winner', score: newScore });
-                        notifications.push({ playerId: player.id, type: 'winner', message: `${player.name} победил!` });
+                        // Reset to 0 when reaching exactly 101
+                        newScore = 0;
                     } else if (newScore > 101) {
-                        // Loser!
+                        // Loser - exceeded 101
                         results.push({ playerId: player.id, status: 'loser', score: newScore });
-                        notifications.push({ playerId: player.id, type: 'loser', message: `${player.name} проиграл (${newScore})` });
-                    } else if (newScore >= 95 && newScore <= 100) {
-                        // Close to winning
-                        notifications.push({ playerId: player.id, type: 'close', message: `${player.name} близко к победе!` });
                     }
                     
                     player.score = newScore;
@@ -1130,21 +1132,18 @@
                 this.rounds.push(round);
                 this.updatedAt = Date.now();
                 
-                // Check for game end
-                const winner = results.find(r => r.status === 'winner');
+                // Check for game end (only when someone loses)
                 const loser = results.find(r => r.status === 'loser');
                 
-                if (winner || loser) {
+                if (loser) {
                     this.status = 'finished';
                     return {
                         gameOver: true,
-                        winner: winner ? this.players.find(p => p.id === winner.playerId) : null,
-                        loser: loser ? this.players.find(p => p.id === loser.playerId) : null,
-                        notifications
+                        loser: this.players.find(p => p.id === loser.playerId)
                     };
                 }
                 
-                return { gameOver: false, notifications };
+                return { gameOver: false };
             }
             
             toJSON() {
@@ -1179,8 +1178,8 @@
                     this.app.ready();
                     this.app.expand();
                     this.app.disableVerticalSwipes();
-                    this.app.setHeaderColor('#0D0D0D');
-                    this.app.setBackgroundColor('#0D0D0D');
+                    this.app.setHeaderColor('#F8F9FA');
+                    this.app.setBackgroundColor('#F8F9FA');
                     this.app.enableClosingConfirmation();
                     
                     // Add platform class to body
@@ -1251,29 +1250,54 @@
             constructor(app) {
                 this.app = app;
                 this.currentScreen = null;
+                this.isNavigating = false;
             }
             
             navigate(screenName, data = {}) {
-                const oldScreen = this.currentScreen;
+                if (this.isNavigating) return;
+                this.isNavigating = true;
                 
-                if (oldScreen) {
-                    oldScreen.element.classList.remove('active');
-                    setTimeout(() => {
-                        oldScreen.element.style.display = 'none';
-                    }, 200);
+                const oldScreen = this.currentScreen;
+                const newScreen = this.app.screens[screenName];
+                
+                if (!newScreen) {
+                    this.isNavigating = false;
+                    return;
                 }
                 
-                const screen = this.app.screens[screenName];
-                if (screen) {
-                    this.currentScreen = screen;
-                    screen.render(data);
-                    screen.element.style.display = 'block';
+                // Fade out old screen
+                if (oldScreen) {
+                    oldScreen.element.style.animation = 'fadeOut var(--transition-base) forwards';
                     setTimeout(() => {
-                        screen.element.classList.add('active');
-                    }, 10);
+                        oldScreen.element.style.display = 'none';
+                        oldScreen.element.classList.remove('active');
+                        oldScreen.element.style.animation = '';
+                        
+                        // Show new screen
+                        this.showNewScreen(newScreen, data);
+                    }, 200);
+                } else {
+                    // No old screen, show new screen immediately
+                    this.showNewScreen(newScreen, data);
                 }
                 
                 window.scrollTo(0, 0);
+            }
+            
+            showNewScreen(screen, data) {
+                this.currentScreen = screen;
+                screen.render(data);
+                screen.element.style.display = 'block';
+                screen.element.style.opacity = '0';
+                
+                // Force reflow
+                screen.element.offsetHeight;
+                
+                setTimeout(() => {
+                    screen.element.classList.add('active');
+                    screen.element.style.opacity = '1';
+                    this.isNavigating = false;
+                }, 50);
             }
         }
 
@@ -1404,14 +1428,13 @@
                     ...this.game.toJSON(),
                     completedAt: Date.now(),
                     duration: Date.now() - this.game.createdAt,
-                    winner: result.winner?.id || null,
                     loser: result.loser?.id || null,
                     totalRounds: this.game.rounds.length
                 };
                 
                 this.storage.saveCompletedGame(completedGame);
                 this.storage.clearCurrentGame();
-                this.telegram.haptic('success');
+                this.telegram.haptic('error'); // Error haptic for game end
                 this.router.navigate('finish', { game: completedGame, result });
             }
             
@@ -1741,29 +1764,29 @@
                             y: {
                                 min: yMin,
                                 max: yMax,
-                                grid: { color: '#262626' },
+                                grid: { color: '#E5E7EB' },
                                 ticks: {
-                                    color: '#A0A0A0',
-                                    font: { size: 12, weight: 'bold' }
+                                    color: '#6B7280',
+                                    font: { size: 12, weight: '500' }
                                 },
                                 title: {
                                     display: true,
                                     text: 'Счет',
-                                    color: '#FFFFFF',
-                                    font: { size: 14, weight: 'bold' }
+                                    color: '#1A1A1A',
+                                    font: { size: 14, weight: '600' }
                                 }
                             },
                             x: {
-                                grid: { color: '#262626' },
+                                grid: { color: '#E5E7EB' },
                                 ticks: {
-                                    color: '#A0A0A0',
-                                    font: { size: 12, weight: 'bold' }
+                                    color: '#6B7280',
+                                    font: { size: 12, weight: '500' }
                                 },
                                 title: {
                                     display: true,
                                     text: 'Раунд',
-                                    color: '#FFFFFF',
-                                    font: { size: 14, weight: 'bold' }
+                                    color: '#1A1A1A',
+                                    font: { size: 14, weight: '600' }
                                 }
                             }
                         },
@@ -1771,7 +1794,7 @@
                             legend: {
                                 position: 'bottom',
                                 labels: {
-                                    color: '#FFFFFF',
+                                    color: '#1A1A1A',
                                     padding: 15,
                                     font: { size: 13, weight: '500' },
                                     usePointStyle: true,
@@ -1779,10 +1802,10 @@
                                 }
                             },
                             tooltip: {
-                                backgroundColor: '#1A1A1A',
-                                titleColor: '#FFFFFF',
-                                bodyColor: '#A0A0A0',
-                                borderColor: '#333333',
+                                backgroundColor: '#FFFFFF',
+                                titleColor: '#1A1A1A',
+                                bodyColor: '#6B7280',
+                                borderColor: '#E5E7EB',
                                 borderWidth: 1,
                                 padding: 12,
                                 displayColors: true,
@@ -1838,25 +1861,13 @@
                     // Update round number
                     this.element.querySelector('.scoreboard-title').textContent = `Счет (Раунд ${this.app.game.rounds.length})`;
                     
-                    // Show notifications
-                    if (result.notifications && result.notifications.length > 0) {
-                        result.notifications.forEach((notif, index) => {
-                            setTimeout(() => {
-                                const type = notif.type === 'winner' ? 'success' :
-                                           notif.type === 'loser' ? 'error' :
-                                           notif.type === 'cutoff' ? 'warning' : 'info';
-                                this.app.toast.show(notif.message, type);
-                            }, index * 500);
-                        });
-                    }
-                    
-                    // Auto-focus first input for next round
+                    // Auto-focus first input for next round (only if game continues)
                     if (!result.gameOver) {
                         setTimeout(() => {
                             const firstInput = this.element.querySelector('#round-inputs input');
                             if (firstInput) firstInput.focus();
                         }, 100);
-                        this.app.telegram.haptic('success');
+                        this.app.telegram.haptic('light');
                     }
                 } catch (error) {
                     // Error already handled in app
@@ -1899,7 +1910,7 @@
                 
                 modal.querySelector('#btn-rules').addEventListener('click', () => {
                     this.app.telegram.haptic('light');
-                    this.app.telegram.showAlert('Правила игры 101:\n\n1. Цель: набрать ровно 101 очко\n2. При достижении 50 очков → сброс до 25\n3. При 101 очке → победа\n4. При превышении 101 → проигрыш\n5. Допустимы отрицательные очки');
+                    this.app.telegram.showAlert('Правила игры 101:\n\n1. При достижении 50 очков → сброс до 25\n2. При достижении ровно 101 очка → сброс до 0\n3. При превышении 101 → ПРОИГРЫШ\n4. Игра продолжается пока кто-то не проиграет\n5. Допустимы отрицательные очки');
                 });
                 
                 modal.querySelector('#btn-end-game').addEventListener('click', () => {
@@ -1912,15 +1923,9 @@
         class FinishScreen extends Screen {
             render(data) {
                 const { game, result } = data;
-                const winner = result.winner;
                 const loser = result.loser;
                 
-                let message = '';
-                if (winner) {
-                    message = `<p class="text-success" style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold);">🎉 ${winner.name} победил!</p>`;
-                } else if (loser) {
-                    message = `<p class="text-error" style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold);">😔 ${loser.name} проиграл</p>`;
-                }
+                let message = `<p class="text-error" style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold);">😔 ${loser.name} проиграл</p>`;
                 
                 this.element.innerHTML = `
                     <div class="header">
@@ -1951,7 +1956,7 @@
                     </div>
                 `;
                 
-                this.renderFinalScores(game, winner, loser);
+                this.renderFinalScores(game, loser);
                 this.renderChart(game);
                 
                 this.element.querySelector('#btn-history').addEventListener('click', () => {
@@ -1965,7 +1970,7 @@
                 });
             }
             
-            renderFinalScores(game, winner, loser) {
+            renderFinalScores(game, loser) {
                 const container = this.element.querySelector('#final-scores');
                 const sortedPlayers = [...game.players].sort((a, b) => b.score - a.score);
                 
@@ -1973,16 +1978,13 @@
                     const item = document.createElement('div');
                     item.className = 'score-item';
                     
-                    if (winner && player.id === winner.id) {
-                        item.classList.add('leader');
-                    }
+                    const isLoser = loser && player.id === loser.id;
                     
                     item.innerHTML = `
                         <div class="score-player">
                             <div class="score-player-color" style="background-color: ${player.color};"></div>
                             <span class="score-player-name">${player.name}</span>
-                            ${winner && player.id === winner.id ? '<span style="margin-left: 8px;">👑</span>' : ''}
-                            ${loser && player.id === loser.id ? '<span style="margin-left: 8px;">😔</span>' : ''}
+                            ${isLoser ? '<span style="margin-left: 8px;">😔</span>' : ''}
                         </div>
                         <span class="score-value">${player.score}</span>
                     `;
@@ -2028,29 +2030,29 @@
                             y: {
                                 min: yMin,
                                 max: yMax,
-                                grid: { color: '#262626' },
+                                grid: { color: '#E5E7EB' },
                                 ticks: {
-                                    color: '#A0A0A0',
-                                    font: { size: 12, weight: 'bold' }
+                                    color: '#6B7280',
+                                    font: { size: 12, weight: '500' }
                                 },
                                 title: {
                                     display: true,
                                     text: 'Счет',
-                                    color: '#FFFFFF',
-                                    font: { size: 14, weight: 'bold' }
+                                    color: '#1A1A1A',
+                                    font: { size: 14, weight: '600' }
                                 }
                             },
                             x: {
-                                grid: { color: '#262626' },
+                                grid: { color: '#E5E7EB' },
                                 ticks: {
-                                    color: '#A0A0A0',
-                                    font: { size: 12, weight: 'bold' }
+                                    color: '#6B7280',
+                                    font: { size: 12, weight: '500' }
                                 },
                                 title: {
                                     display: true,
                                     text: 'Раунд',
-                                    color: '#FFFFFF',
-                                    font: { size: 14, weight: 'bold' }
+                                    color: '#1A1A1A',
+                                    font: { size: 14, weight: '600' }
                                 }
                             }
                         },
@@ -2058,7 +2060,7 @@
                             legend: {
                                 position: 'bottom',
                                 labels: {
-                                    color: '#FFFFFF',
+                                    color: '#1A1A1A',
                                     padding: 15,
                                     font: { size: 13, weight: '500' },
                                     usePointStyle: true,
@@ -2066,10 +2068,10 @@
                                 }
                             },
                             tooltip: {
-                                backgroundColor: '#1A1A1A',
-                                titleColor: '#FFFFFF',
-                                bodyColor: '#A0A0A0',
-                                borderColor: '#333333',
+                                backgroundColor: '#FFFFFF',
+                                titleColor: '#1A1A1A',
+                                bodyColor: '#6B7280',
+                                borderColor: '#E5E7EB',
                                 borderWidth: 1,
                                 padding: 12,
                                 displayColors: true,
@@ -2118,7 +2120,6 @@
                 const container = this.element.querySelector('#history-list');
                 
                 games.forEach(game => {
-                    const winner = game.players.find(p => p.id === game.winner);
                     const loser = game.players.find(p => p.id === game.loser);
                     
                     const card = document.createElement('div');
@@ -2132,9 +2133,8 @@
                         </div>
                         <div class="history-players">
                             ${game.players.map(p => {
-                                const isWinner = winner && p.id === winner.id;
                                 const isLoser = loser && p.id === loser.id;
-                                return `<span class="history-player ${isWinner ? 'history-winner' : ''} ${isLoser ? 'history-loser' : ''}">${p.name} (${p.score})</span>`;
+                                return `<span class="history-player ${isLoser ? 'history-loser' : ''}">${p.name} (${p.score})</span>`;
                             }).join('')}
                         </div>
                     `;
