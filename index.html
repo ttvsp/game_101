@@ -191,10 +191,12 @@
             display: none;
             opacity: 0;
             animation: fadeIn var(--transition-base) forwards;
+            flex-direction: column;
+            width: 100%;
         }
         
         .screen.active {
-            display: block;
+            display: flex;
         }
         
         @keyframes fadeIn {
@@ -215,7 +217,17 @@
             padding: var(--space-4);
             background-color: #FFFFFF;
             border-bottom: 1px solid var(--color-border-subtle);
-            position: relative;
+            position: sticky;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: var(--z-sticky);
+            width: 100%;
+        }
+        
+        /* Mobile header spacing adjustment */
+        body.platform-mobile .header {
+            margin-top: var(--space-8);
         }
         
         .header-title {
@@ -1963,12 +1975,24 @@
                 
                 const labels = Array.from({ length: this.app.game.rounds.length + 1 }, (_, i) => i);
                 
-                // Calculate Y axis range
+                // Calculate Y axis range - always start with 0-101
                 const allScores = this.app.game.players.flatMap(p => p.scoreHistory);
-                const min = Math.min(...allScores, 0);
-                const max = Math.max(...allScores, 101);
-                const yMin = Math.floor(min / 20) * 20 - 10;
-                const yMax = Math.ceil(max / 20) * 20 + 10;
+                const min = Math.min(...allScores);
+                const max = Math.max(...allScores);
+                
+                // Default range: 0 to 101
+                let yMin = 0;
+                let yMax = 101;
+                
+                // Expand if values go below 0
+                if (min < 0) {
+                    yMin = Math.floor(min / 10) * 10;
+                }
+                
+                // Expand if values go above 101
+                if (max > 101) {
+                    yMax = Math.ceil(max / 10) * 10;
+                }
                 
                 this.app.chart = new Chart(ctx, {
                     type: 'line',
@@ -2015,10 +2039,12 @@
                                 position: 'bottom',
                                 labels: {
                                     color: '#1A1A1A',
-                                    padding: 15,
+                                    padding: 20,
                                     font: { size: 13, weight: '500' },
                                     usePointStyle: true,
-                                    pointStyle: 'circle'
+                                    pointStyle: 'circle',
+                                    boxWidth: 8,
+                                    boxHeight: 8
                                 }
                             },
                             tooltip: {
@@ -2188,11 +2214,24 @@
                 
                 const labels = Array.from({ length: game.rounds.length + 1 }, (_, i) => i);
                 
+                // Calculate Y axis range - always start with 0-101
                 const allScores = game.players.flatMap(p => p.scoreHistory);
-                const min = Math.min(...allScores, 0);
-                const max = Math.max(...allScores, 101);
-                const yMin = Math.floor(min / 20) * 20 - 10;
-                const yMax = Math.ceil(max / 20) * 20 + 10;
+                const min = Math.min(...allScores);
+                const max = Math.max(...allScores);
+                
+                // Default range: 0 to 101
+                let yMin = 0;
+                let yMax = 101;
+                
+                // Expand if values go below 0
+                if (min < 0) {
+                    yMin = Math.floor(min / 10) * 10;
+                }
+                
+                // Expand if values go above 101
+                if (max > 101) {
+                    yMax = Math.ceil(max / 10) * 10;
+                }
                 
                 new Chart(ctx, {
                     type: 'line',
@@ -2239,10 +2278,12 @@
                                 position: 'bottom',
                                 labels: {
                                     color: '#1A1A1A',
-                                    padding: 15,
+                                    padding: 20,
                                     font: { size: 13, weight: '500' },
                                     usePointStyle: true,
-                                    pointStyle: 'circle'
+                                    pointStyle: 'circle',
+                                    boxWidth: 8,
+                                    boxHeight: 8
                                 }
                             },
                             tooltip: {
