@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+    <title>Игра 101</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            background-color:#0a0a0a;
+            color:#f0f0f0;
+            font-family:'Roboto',sans-serif;
+            margin:0;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+        }
+        
+        /* Platform-specific padding */
+        body.platform-mobile {
+            padding-top: calc(100px + env(safe-area-inset-top, 0px));
+            padding-left: 16px;
+            padding-right: 16px;
+            padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+        }
+        body.platform-desktop {
+            padding-top: 20px;
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-bottom: 20px;
+        }
+        
+        h1, h2 {color:#ffffff;font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,0.2);}
+        h1 {font-size:2.5em;margin-bottom:40px;}
+        h2 {font-size:1.5em;margin:0 0 15px 0;}
+        body.platform-mobile h2 {font-size:1.3em;}
+        
+        input, button {background-color:#1a1a1a;color:#f0f0f0;border:1px solid #282828;padding:12px;margin:6px;border-radius:12px;font-size:16px;transition:all 0.3s ease;box-shadow:0 2px 4px rgba(0,0,0,0.1);}
+        button {cursor:pointer;}
+        button:hover {background-color:#282828;border-color:#383838;box-shadow:0 4px 8px rgba(0,0,0,0.2);}
+        
+        .container {max-width:800px;width:100%;text-align:center;}
+        .players-input {display:flex;flex-direction:column;align-items:center;}
+        .player-input {display:flex;align-items:center;margin:6px 0;}
+        .player-input input {width:220px;margin-right:5px;}
+        .remove-player {background-color:transparent;border:none;color:#ff5252;font-size:26px;cursor:pointer;padding:0;width:32px;height:32px;display:flex;align-items:center;justify-content:center;transition:all 0.3s ease;}
+        .remove-player:hover {color:#ff1744;transform:scale(1.1);}
+        
+        .game-section {display:none;}
+        .game-columns {display:flex;justify-content:space-between;align-items:flex-start;}
+        body.platform-mobile .game-columns {flex-direction:column;align-items:center;gap:24px;}
+        
+        .left-column, .right-column {width:48%;}
+        body.platform-mobile .left-column, 
+        body.platform-mobile .right-column {width:100%;max-width:400px;}
+        
+        .scores {margin:0;display:flex;flex-direction:column;align-items:stretch;}
+        .score-item {
+            background-color:#1a1a1a;
+            padding:14px;
+            margin:6px 0;
+            border-radius:12px;
+            width:100%;
+            box-sizing:border-box;
+            text-align:left;
+            box-shadow:0 3px 6px rgba(0,0,0,0.15);
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
+        }
+        body.platform-mobile .score-item {padding:12px;}
+        
+        .round-inputs {display:flex;flex-direction:column;align-items:stretch;width:100%;}
+        .round-input {
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            margin:6px 0;
+            width:100%;
+        }
+        .round-input label {
+            width:120px;
+            text-align:right;
+            margin-right:12px;
+            color:#bbbbbb;
+            flex-shrink:0;
+        }
+        .round-input input {
+            width:120px;
+            flex-shrink:0;
+        }
+        body.platform-mobile .round-input label {width:100px;}
+        body.platform-mobile .round-input input {width:100px;}
+        
+        #submit-button {display:block;margin:12px auto 0;background-color:#1a1a1a;border-color:#282828;}
+        #submit-button:hover {background-color:#282828;}
+        
+        #chart-container {margin-top:20px;background-color:#1a1a1a;padding:18px;border-radius:12px;box-shadow:0 3px 6px rgba(0,0,0,0.15);height:400px;}
+        body.platform-mobile #chart-container {height:300px;padding:12px;}
+        
+        #game-over {color:#ff5252;font-size:1.8em;margin:20px 0;display:none;}
+        #restart-button {background-color:#4caf50;margin:12px 0 0 auto;display:block;}
+        #restart-button:hover {background-color:#388e3c;}
+        
+        .chart-section {width:100%; margin-top: 40px;}
+        
+        #add-player-button {border-radius:50%; width:44px; height:44px; font-size:26px; padding:0; line-height:1; margin:12px auto; display:block;box-shadow:0 2px 4px rgba(0,0,0,0.1);}
+        #start-game-button {font-size:20px; padding:16px 32px; margin-bottom:40px;background-color:#1a1a1a;border-color:#282828;}
+        #start-game-button:hover {background-color:#282828;}
+        
+        .player-setup-container {
+            background-color:#1a1a1a;
+            padding:24px;
+            border-radius:24px;
+            box-shadow:0 4px 8px rgba(0,0,0,0.2);
+            width:320px;
+            text-align:center;
+        }
+        body.platform-mobile .player-setup-container {width:100%;max-width:320px;}
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>101</h1>
+       
+        <div id="setup-section" class="players-input">
+            <button id="start-game-button" onclick="startGame()">Начать игру</button>
+            <div class="player-setup-container">
+                <h2>Введите имена игроков</h2>
+                <div id="player-inputs"></div>
+                <button id="add-player-button" onclick="addPlayerInput()">+</button>
+            </div>
+        </div>
+       
+        <div id="game-section" class="game-section">
+            <div class="game-columns">
+                <div class="left-column">
+                    <h2>Текущий счет</h2>
+                    <div id="scores" class="scores"></div>
+                </div>
+                <div class="right-column">
+                    <h2>Ввод очков за раздачу</h2>
+                    <div id="round-inputs" class="round-inputs"></div>
+                </div>
+            </div>
+            <button id="submit-button" onclick="submitRound()">Записать результат</button>
+           
+            <h2 id="game-over">Игра окончена!</h2>
+           
+            <div class="chart-section">
+                <h2>Динамика счета</h2>
+                <div id="chart-container">
+                    <canvas id="score-chart"></canvas>
+                </div>
+                <button id="restart-button" onclick="restartGame()">Начать заново</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        let players = [];
+        let scores = {};
+        let history = {};
+        let roundNumber = 0;
+        let chart;
+        let playerInputCount = 0;
+        
+        window.onload = function() {
+            addPlayerInput();
+            addPlayerInput();
+        };
+        
+        function addPlayerInput(name = '') {
+            playerInputCount++;
+            const inputsDiv = document.getElementById('player-inputs');
+            const div = document.createElement('div');
+            div.className = 'player-input';
+            div.id = `player-input-${playerInputCount}`;
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.placeholder = 'Имя игрока';
+            input.value = name;
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'remove-player';
+            removeBtn.textContent = '×';
+            removeBtn.onclick = () => removePlayerInput(playerInputCount);
+            div.appendChild(input);
+            div.appendChild(removeBtn);
+            inputsDiv.appendChild(div);
+        }
+        
+        function removePlayerInput(id) {
+            const div = document.getElementById(`player-input-${id}`);
+            if (div) div.remove();
+        }
+        
+        function startGame() {
+            const inputDivs = document.querySelectorAll('.player-input input');
+            players = Array.from(inputDivs).map(input => input.value.trim()).filter(name => name !== '');
+            if (players.length < 2) {
+                alert('Добавьте хотя бы двух игроков!');
+                return;
+            }
+            players.forEach(player => {
+                scores[player] = 0;
+                history[player] = [0];
+            });
+           
+            document.getElementById('setup-section').style.display = 'none';
+            document.getElementById('game-section').style.display = 'block';
+           
+            updateScoresDisplay();
+            updateRoundInputs();
+            initChart();
+            updateChart();
+            document.getElementById('game-over').style.display = 'none';
+            document.getElementById('round-inputs').style.display = 'flex';
+            document.getElementById('submit-button').style.display = 'block';
+        }
+        
+        function updateScoresDisplay() {
+            const scoresDiv = document.getElementById('scores');
+            scoresDiv.innerHTML = '';
+            players.forEach(player => {
+                const div = document.createElement('div');
+                div.className = 'score-item';
+                div.textContent = `${player}: ${scores[player]}`;
+                scoresDiv.appendChild(div);
+            });
+        }
+        
+        function updateRoundInputs() {
+            const inputsDiv = document.getElementById('round-inputs');
+            inputsDiv.innerHTML = '';
+            players.forEach(player => {
+                const div = document.createElement('div');
+                div.className = 'round-input';
+                const label = document.createElement('label');
+                label.textContent = `${player}:`;
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.id = `points-${player}`;
+                input.placeholder = 'Очки';
+                div.appendChild(label);
+                div.appendChild(input);
+                inputsDiv.appendChild(div);
+            });
+        }
+        
+        function submitRound() {
+            let allFilled = true;
+            const points = {};
+            players.forEach(player => {
+                const input = document.getElementById(`points-${player}`);
+                const value = parseInt(input.value, 10);
+                if (isNaN(value)) {
+                    allFilled = false;
+                    return;
+                }
+                points[player] = value;
+                input.value = '';
+            });
+           
+            if (!allFilled) {
+                alert('Введите очки для всех игроков!');
+                return;
+            }
+           
+            roundNumber++;
+            let gameOver = false;
+            players.forEach(player => {
+                let newScore = scores[player] + points[player];
+                if (newScore === 100) {
+                    newScore = 50;
+                } else if (newScore === 101) {
+                    newScore = 0;
+                } else if (newScore > 101) {
+                    gameOver = true;
+                    alert(`${player} проиграл! Счет превысил 101.`);
+                }
+                scores[player] = newScore;
+                history[player].push(newScore);
+            });
+           
+            updateScoresDisplay();
+            updateChart();
+           
+            if (gameOver) {
+                document.getElementById('round-inputs').style.display = 'none';
+                document.getElementById('submit-button').style.display = 'none';
+                document.getElementById('game-over').style.display = 'block';
+            }
+        }
+        
+        function initChart() {
+            const ctx = document.getElementById('score-chart').getContext('2d');
+            const datasets = players.map(player => ({
+                label: '  ' + player,
+                data: [],
+                borderColor: getBrightColor(),
+                backgroundColor: getBrightColor(),
+                fill: false,
+                tension: 0.1,
+                pointStyle: 'circle',
+                pointRadius: 5,
+                pointBackgroundColor: getBrightColor(),
+                pointBorderColor: 'transparent',
+                pointBorderWidth: 0
+            }));
+           
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: datasets
+                },
+                options: {
+                    scales: {
+                        y: {
+                            min: -10,
+                            max: 100,
+                            title: {display: true, text: 'Счет', color: '#ffffff', font: {size: 14, weight: 'bold'}},
+                            grid: {color: '#282828'},
+                            ticks: {color: '#ffffff', stepSize: 20, font: {size: 12, weight: 'bold'}}
+                        },
+                        x: {
+                            title: {display: false},
+                            grid: {color: '#282828'},
+                            ticks: {color: '#ffffff', font: {size: 12, weight: 'bold'}, callback: function(value, index, ticks) { return index === 0 ? '' : value; }}
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {color: '#ffffff', usePointStyle: true, pointStyle: 'circle', boxWidth: 4, padding: 30, font: {size: 14, weight: 'bold'}}
+                        }
+                    },
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+        
+        function updateChart() {
+            chart.data.labels = Array.from({length: roundNumber + 1}, (_, i) => i);
+            players.forEach((player, index) => {
+                chart.data.datasets[index].data = history[player];
+            });
+
+            let allScores = Object.values(history).flat();
+            let globalMin = Math.min(...allScores);
+            let globalMax = Math.max(...allScores);
+
+            let effectiveMin = Math.min(-10, Math.floor(globalMin / 20) * 20);
+            let effectiveMax = Math.max(100, Math.ceil(globalMax / 20) * 20);
+
+            chart.options.scales.y.min = effectiveMin;
+            chart.options.scales.y.max = effectiveMax;
+
+            chart.update();
+        }
+        
+        function getBrightColor() {
+            const h = Math.random() * 360;
+            const s = 100;
+            const l = 70;
+            return `hsl(${h}, ${s}%, ${l}%)`;
+        }
+        
+        function restartGame() {
+            location.reload();
+        }
+
+        // Telegram WebApp initialization
+        const webApp = window.Telegram.WebApp;
+
+        const start = () => {
+            webApp.ready();
+            webApp.expand();
+            webApp.disableVerticalSwipes();
+            webApp.setHeaderColor('#0a0a0a');
+            webApp.setBackgroundColor('#0a0a0a');
+            
+            // Определяем платформу как в MarketLab
+            const isMobile = ['android','ios'].includes(webApp.platform);
+            document.body.classList.add(isMobile ? 'platform-mobile' : 'platform-desktop');
+            
+            // Проверяем существование метода requestFullscreen
+            if (webApp.requestFullscreen) {
+                setTimeout(() => {
+                    webApp.requestFullscreen().catch(() => webApp.expand());
+                }, 300);
+            }
+        };
+
+        if (window.Telegram?.WebApp) {
+            start();
+        } else {
+            window.addEventListener('TelegramWebAppReady', start, { once: true });
+        }
+    </script>
+</body>
+</html>
